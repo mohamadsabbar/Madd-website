@@ -1,0 +1,829 @@
+/**
+ * مدد | MADD — لوحة التحكم
+ * هوية بصرية: تيل بترولي + أسود + أبيض
+ */
+:root {
+    --olivia-font: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --olivia-navy: #101517;
+    --olivia-navy-soft: #1a3f46;
+    --olivia-slate: #3a4548;
+    --olivia-muted: #6b777a;
+    --olivia-border: #dde6e7;
+    --olivia-bg: #f4f7f7;
+    --olivia-surface: #ffffff;
+    --olivia-accent: #101517;
+    --olivia-accent-2: #2b5d66;
+    --olivia-accent-2-hover: #1a3f46;
+    --olivia-accent-soft: rgba(43, 93, 102, 0.12);
+    --olivia-gradient-cta: linear-gradient(180deg, #3a7580 0%, #2b5d66 45%, #1a3f46 100%);
+    --olivia-gradient: linear-gradient(125deg, #1a3f46 0%, #2b5d66 100%);
+    --olivia-gradient-soft: #eaf3f4;
+    --olivia-radius: 12px;
+    --olivia-shadow: 0 1px 3px rgba(16, 21, 23, 0.06), 0 4px 14px rgba(16, 21, 23, 0.05);
+    --olivia-shadow-lg: 0 4px 24px rgba(16, 21, 23, 0.08);
+    --olivia-glow-accent: var(--olivia-shadow-lg);
+    --olivia-glow-soft: var(--olivia-shadow);
+}
+
+html { font-size: 15px; }
+
+body.olivia-panel {
+    font-family: var(--olivia-font);
+    background: var(--olivia-bg);
+    background-attachment: fixed;
+    color: var(--olivia-navy);
+    font-weight: 500;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: 0.01em;
+    --bs-primary: #2b5d66;
+    --bs-primary-rgb: 43, 93, 102;
+    --bs-link-color: #2b5d66;
+    --bs-link-hover-color: #1a3f46;
+}
+
+/* هيكل التطبيق */
+.olivia-shell {
+    display: flex;
+    min-height: 100vh;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.olivia-sidebar {
+    width: 278px;
+    flex-shrink: 0;
+    background: #ffffff;
+    border: 1px solid var(--olivia-border);
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 8px 28px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    height: calc(100vh - 2rem);
+    position: sticky;
+    top: 1rem;
+}
+
+.olivia-sidebar::before {
+    content: '';
+    position: absolute;
+    inset-inline-end: 0;
+    top: 0;
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(180deg, #1a3f46 0%, #2b5d66 55%, #3a7580 100%);
+    border-radius: 3px 0 0 3px;
+}
+
+.olivia-sidebar-brand {
+    padding: 1.25rem 1.1rem 1.1rem;
+    border-bottom: 1px solid var(--olivia-border);
+    background: #ffffff;
+}
+
+.olivia-sidebar-brand img {
+    max-height: 48px;
+    max-width: 100%;
+    object-fit: contain;
+    background: transparent !important;
+    border: none !important;
+    filter: drop-shadow(0 2px 8px rgba(15, 23, 42, 0.06));
+}
+
+.olivia-sidebar-brand img.olivia-brand-logo {
+    max-height: 64px;
+    width: auto;
+}
+
+.auth-login-card__logo {
+    max-height: 72px !important;
+    width: auto !important;
+    height: auto !important;
+}
+
+.olivia-nav-label {
+    font-size: 0.62rem;
+    font-weight: 800;
+    color: var(--olivia-muted);
+    letter-spacing: 0.14em;
+    padding: 1.1rem 1.35rem 0.4rem;
+    opacity: 0.9;
+}
+
+.olivia-sidebar-nav {
+    padding: 0.35rem 0 1rem;
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+
+.olivia-sidebar-nav::-webkit-scrollbar {
+    width: 6px;
+}
+
+.olivia-sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.45);
+    border-radius: 999px;
+}
+
+.olivia-sidebar-nav .nav-link {
+    position: relative;
+    margin: 0.2rem 0.9rem;
+    padding: 0.72rem 1rem;
+    border-radius: 12px;
+    color: var(--olivia-slate);
+    font-weight: 600;
+    font-size: 0.93rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.olivia-sidebar-nav .nav-link i {
+    font-size: 1.08rem;
+    width: 1.4rem;
+    text-align: center;
+    color: var(--olivia-muted);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.olivia-sidebar-nav .nav-link:hover {
+    background: var(--olivia-accent-soft);
+    color: var(--olivia-navy);
+    border-color: rgba(43, 93, 102, 0.22);
+    transform: translateX(-2px);
+}
+
+[dir="rtl"] .olivia-sidebar-nav .nav-link:hover {
+    transform: translateX(2px);
+}
+
+.olivia-sidebar-nav .nav-link:hover i {
+    color: var(--olivia-accent-2);
+    transform: scale(1.05);
+}
+
+.olivia-sidebar-nav .nav-link.active {
+    background: linear-gradient(135deg, #1a3f46 0%, #2b5d66 50%, #3a7580 100%);
+    color: #fff !important;
+    border-color: transparent;
+    box-shadow: 0 8px 24px rgba(43, 93, 102, 0.28);
+}
+
+.olivia-sidebar-nav .nav-link.active i {
+    color: rgba(255, 255, 255, 0.98) !important;
+    transform: none;
+}
+
+.olivia-sidebar-nav .nav-link.active::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35);
+}
+
+.olivia-sidebar-footer {
+    padding: 1rem 1.2rem 1.15rem;
+    border-top: 1px solid var(--olivia-border);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--olivia-muted);
+    background: linear-gradient(180deg, #fafbfc 0%, #f1f5f9 100%);
+    line-height: 1.55;
+}
+
+.olivia-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+.olivia-topbar {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 18px;
+    padding: 1rem 1.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.06);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.olivia-topbar-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--olivia-navy);
+    margin: 0;
+    letter-spacing: -0.02em;
+}
+
+.olivia-topbar-meta {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--olivia-muted);
+    margin-top: 0.2rem;
+}
+
+.olivia-user-pill {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--olivia-slate);
+    padding: 0.35rem 0.85rem;
+    background: #f1f5f9;
+    border-radius: 999px;
+    border: 1px solid var(--olivia-border);
+}
+
+.olivia-btn-logout,
+button.btn.olivia-btn-logout {
+    font-family: var(--olivia-font);
+    font-weight: 800;
+    font-size: 0.9rem;
+    letter-spacing: 0.02em;
+    padding: 0.55rem 1.2rem;
+    border-radius: 12px;
+    border: 2px solid var(--olivia-accent-2) !important;
+    color: #1a3f46 !important;
+    background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%) !important;
+    box-shadow: 0 2px 8px rgba(43, 93, 102, 0.18);
+    transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.12s;
+}
+
+.olivia-btn-logout:hover,
+button.btn.olivia-btn-logout:hover {
+    background: #eef2ff !important;
+    border-color: #1a3f46 !important;
+    color: #1e3a8a !important;
+    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.24);
+}
+
+.olivia-btn-logout:focus-visible,
+button.btn.olivia-btn-logout:focus-visible {
+    outline: 3px solid rgba(43, 93, 102, 0.35);
+    outline-offset: 2px;
+}
+
+.olivia-btn-logout i,
+button.btn.olivia-btn-logout i {
+    font-size: 1.05em;
+    vertical-align: -0.12em;
+}
+
+.olivia-content {
+    padding: 1rem 0.35rem 1.5rem;
+    flex: 1;
+    max-width: 1600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* بطاقات عامة */
+.olivia-panel .card {
+    border: 1px solid var(--olivia-border);
+    border-radius: var(--olivia-radius);
+    box-shadow: var(--olivia-shadow);
+    background: var(--olivia-surface);
+    overflow: hidden;
+}
+
+.olivia-panel .card-header {
+    background: linear-gradient(180deg, #fafbfc 0%, #f8fafc 100%);
+    border-bottom: 1px solid var(--olivia-border);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.15rem;
+    color: var(--olivia-navy-soft);
+}
+
+.olivia-panel .table {
+    font-size: 0.9rem;
+}
+
+.olivia-panel .table thead th {
+    font-weight: 700;
+    color: var(--olivia-muted);
+    font-size: 0.78rem;
+    text-transform: none;
+    border-bottom-width: 1px;
+}
+
+/* إحصائيات الإدارة */
+.olivia-stat-card {
+    border-radius: 16px;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    padding: 1.15rem 1.2rem;
+    box-shadow: var(--olivia-shadow);
+    height: 100%;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.olivia-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+}
+
+.olivia-stat-card .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--olivia-muted);
+    margin-bottom: 0.35rem;
+}
+
+.olivia-stat-card .value {
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--olivia-navy);
+}
+
+@media (max-width: 991.98px) {
+    .olivia-shell { padding: 0.65rem; gap: 0.65rem; }
+    .olivia-sidebar { width: 80px; align-items: stretch; height: calc(100vh - 1.3rem); top: 0.65rem; border-radius: 18px; }
+    .olivia-sidebar .nav-link span,
+    .olivia-sidebar .olivia-nav-label,
+    .olivia-sidebar-footer .olivia-footer-text {
+        display: none;
+    }
+    .olivia-sidebar-brand {
+        text-align: center;
+        padding-inline: 0.45rem;
+        padding-block: 1rem 0.85rem;
+    }
+    .olivia-sidebar-nav .nav-link {
+        justify-content: center;
+        padding-inline: 0.65rem;
+        margin-inline: 0.5rem;
+    }
+    .olivia-sidebar-nav .nav-link.active::after {
+        display: none;
+    }
+    .olivia-sidebar-footer {
+        padding: 0.65rem 0.35rem;
+        text-align: center;
+    }
+    .olivia-topbar { border-radius: 14px; padding: 0.8rem 1rem; }
+    .olivia-content { padding: 0.85rem 0 1rem; }
+}
+
+/* ——— صفحة تسجيل الدخول (تصميم مستقل) ——— */
+body.auth-login {
+    font-family: var(--olivia-font);
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    color: var(--olivia-navy);
+    -webkit-font-smoothing: antialiased;
+    position: relative;
+    overflow-x: hidden;
+}
+
+.auth-login-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+        radial-gradient(ellipse 120% 80% at 100% 0%, rgba(43, 93, 102, 0.16) 0%, transparent 52%),
+        radial-gradient(ellipse 90% 70% at 0% 100%, rgba(26, 63, 70, 0.1) 0%, transparent 48%),
+        linear-gradient(165deg, #f4f7f7 0%, #eaf3f4 45%, #e2ecee 100%);
+}
+
+.auth-login-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='%23000000' fill-opacity='0.022'%3E%3Cpath d='M0 0h40v40H0V0zm40 40h40v40H40V40z'/%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+    pointer-events: none;
+}
+
+.auth-login-frame {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: max(1.25rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+    box-sizing: border-box;
+}
+
+.auth-login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(23, 23, 23, 0.06);
+    border-radius: 22px;
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 28px 56px -24px rgba(15, 23, 42, 0.18),
+        0 12px 24px -16px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    overflow: hidden;
+}
+
+.auth-login-card__brand {
+    padding: 1.75rem 1.5rem 1rem;
+    text-align: center;
+    background: linear-gradient(180deg, rgba(43, 93, 102, 0.06) 0%, transparent 100%);
+}
+
+.auth-login-card__logo {
+    display: block;
+    margin: 0 auto;
+    max-width: min(240px, 86%);
+    height: auto;
+    max-height: 96px;
+    object-fit: contain;
+}
+
+.auth-login-card__logo--fallback {
+    max-width: min(200px, 82%);
+    max-height: 88px;
+}
+
+.auth-login-card__body {
+    padding: 0 1.75rem 1.85rem;
+}
+
+.auth-login-card__intro {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.auth-login-card__title {
+    font-size: clamp(1.35rem, 4vw, 1.55rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--olivia-navy);
+    margin: 0;
+    line-height: 1.25;
+}
+
+.auth-login-alert {
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.65rem 0.85rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    line-height: 1.45;
+}
+
+.auth-login-alert--success {
+    background: rgba(22, 163, 74, 0.1);
+    color: #15803d;
+    border: 1px solid rgba(22, 163, 74, 0.22);
+}
+
+.auth-login-alert--danger {
+    background: rgba(220, 38, 38, 0.08);
+    color: #b91c1c;
+    border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.auth-login-alert__list {
+    text-align: start;
+}
+
+.auth-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.auth-login-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.auth-login-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--olivia-slate);
+    letter-spacing: 0.02em;
+}
+
+.auth-login-input-wrap {
+    position: relative;
+}
+
+.auth-login-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.78rem 1rem;
+    padding-inline-end: 2.85rem;
+    font-family: var(--olivia-font);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--olivia-navy);
+    background: #fafafa;
+    border: 1px solid var(--olivia-border);
+    border-radius: 13px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.auth-login-input::placeholder {
+    color: #a3a3a3;
+    font-weight: 500;
+}
+
+.auth-login-input:hover {
+    background: #fff;
+    border-color: #d4d4d4;
+}
+
+.auth-login-input:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--olivia-accent-2);
+    box-shadow: 0 0 0 3px rgba(43, 93, 102, 0.22);
+}
+
+.auth-login-input-icon {
+    position: absolute;
+    top: 50%;
+    inset-inline-end: 14px;
+    transform: translateY(-50%);
+    color: var(--olivia-muted);
+    font-size: 1.05rem;
+    pointer-events: none;
+    opacity: 0.85;
+}
+
+.auth-login-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    margin-top: 0.35rem;
+    padding: 0.88rem 1.25rem;
+    font-family: var(--olivia-font);
+    font-size: 0.98rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: linear-gradient(180deg, #3a7580 0%, var(--olivia-accent-2) 45%, #1a3f46 100%);
+    border: none;
+    border-radius: 13px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.38), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.auth-login-submit:hover {
+    color: #fff;
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(43, 93, 102, 0.42), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+}
+
+.auth-login-submit:active {
+    transform: translateY(0);
+}
+
+.auth-login-submit__ico {
+    font-size: 1.5rem;
+    line-height: 1;
+    margin-inline-start: -0.15rem;
+}
+
+.auth-login-foot {
+    margin: 1.35rem 0 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--olivia-muted);
+    text-align: center;
+    opacity: 0.88;
+}
+
+@media (max-width: 400px) {
+    .auth-login-card__body {
+        padding-inline: 1.25rem;
+    }
+    .auth-login-card__brand {
+        padding-inline: 1.15rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .auth-login-submit {
+        transition: none;
+    }
+}
+
+/* بلاطات إحصائيات الوكيل */
+.olivia-stat-tile {
+    border-radius: var(--olivia-radius);
+    padding: 1.15rem 1.25rem;
+    height: 100%;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    border-top-width: 3px;
+    border-top-style: solid;
+    border-top-color: rgba(148, 163, 184, 0.35);
+    background: linear-gradient(165deg, #ffffff 0%, #fafbfc 100%);
+    box-shadow: var(--olivia-shadow);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.olivia-stat-tile:hover {
+    box-shadow: var(--olivia-shadow-lg);
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+}
+
+.olivia-stat-tile.t-invoices,
+.olivia-stat-tile.t-collect,
+.olivia-stat-tile.t-comm,
+.olivia-stat-tile.t-left {
+    border-top-color: #d4d4d4;
+    background: #ffffff;
+    box-shadow: var(--olivia-shadow);
+}
+
+.olivia-stat-tile .label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--olivia-muted);
+    margin-bottom: 0.4rem;
+}
+
+.olivia-stat-tile .value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--olivia-navy);
+}
+
+.olivia-stat-tile .hint {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--olivia-muted);
+    margin-top: 0.4rem;
+    line-height: 1.45;
+}
+
+.olivia-card-gradient {
+    background: #ffffff !important;
+    color: var(--olivia-navy) !important;
+    border: 1px solid var(--olivia-border) !important;
+    box-shadow: var(--olivia-shadow-lg) !important;
+}
+
+.olivia-card-gradient .label,
+.olivia-card-gradient .value,
+.olivia-card-gradient .sub {
+    color: var(--olivia-navy) !important;
+}
+
+.olivia-card-gradient .sub { opacity: 0.92; font-size: 0.82rem; font-weight: 600; }
+
+/* ========== الرئيسية — تصميم غني بالألوان ========== */
+.olivia-home {
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 1.5rem 1.65rem 1.75rem;
+    border: 1px solid var(--olivia-border);
+    box-shadow: var(--olivia-shadow);
+}
+
+.olivia-hero {
+    position: relative;
+    border-radius: 18px;
+    padding: 1.35rem 1.5rem 1.45rem;
+    margin-bottom: 1.35rem;
+    overflow: hidden;
+    color: var(--olivia-navy);
+    background: #ffffff;
+    border: 1px solid var(--olivia-border);
+    box-shadow: var(--olivia-shadow);
+}
+
+.olivia-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: transparent;
+    pointer-events: none;
+}
+
+.olivia-hero > * { position: relative; z-index: 1; }
+
+.olivia-hero-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.35rem;
+}
+
+.olivia-hero-sub {
+    font-size: 0.88rem;
+    font-weight: 600;
+    opacity: 0.94;
+    margin: 0;
+    line-height: 1.55;
+}
+
+.olivia-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: #f5f5f5;
+    border: 1px solid var(--olivia-border);
+}
+
+.olivia-hero-actions .btn {
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.5rem 1rem;
+    font-size: 0.86rem;
+}
+
+.olivia-hero-actions .btn-light {
+    background: #ffffff;
+    border: 1px solid var(--olivia-border);
+    color: var(--olivia-navy);
+    box-shadow: var(--olivia-shadow);
+}
+
+.olivia-hero-actions .btn-outline-light {
+    border: 1px solid var(--olivia-border);
+    color: var(--olivia-navy);
+    background: #ffffff;
+}
+
+.olivia-hero-actions .btn-outline-light:hover {
+    background: #f5f5f5;
+    color: var(--olivia-navy);
+}
+
+.olivia-month-card {
+    border-radius: 18px !important;
+    border: 1px solid rgba(226, 232, 240, 0.9) !important;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.olivia-month-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1) !important;
+}
+
+.olivia-month-card--soft {
+    background: #ffffff !important;
+}
+
+.olivia-stat-card--indigo,
+.olivia-stat-card--emerald,
+.olivia-stat-card--amber,
+.olivia-stat-card--cyan,
+.olivia-stat-card--violet {
+    background: #ffffff;
+    border-color: var(--olivia-border);
+    border-top: 3px solid #d4d4d4;
+}
+
+.olivia-welcome-card {
+    border-radius: 18px;
+    border: 1px solid var(--olivia-border);
+    background: #ffffff;
+    box-shadow: var(--olivia-shadow);
+    overflow: hidden;
+    position: relative;
+}
+
+.olivia-welcome-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--olivia-accent-2);
+}
+
+.olivia-welcome-card .card-body {
+    padding: 1.35rem 1.5rem;
+    font-weight: 600;
+    color: #475569;
+}

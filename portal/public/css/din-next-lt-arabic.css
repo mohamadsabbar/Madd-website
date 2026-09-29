@@ -1,0 +1,44 @@
+/**
+ * DIN Next LT Arabic — أوزان للواجهة (400–800)
+ * المصدر: ملفات woff2 من خدمة استضافة عامة؛ للإنتاج يُفضّل ترخيص Linotype واستضافة ذاتية.
+ * Medium ≈ النص العام، Bold للعناوين والأوزان القوية.
+ */
+@font-face {
+    font-family: 'DIN Next LT Arabic';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/aba1a083bf50980a05f0265179103a09.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DIN Next LT Arabic';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/aba1a083bf50980a05f0265179103a09.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DIN Next LT Arabic';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/513071b47bdba774c93a73ad16a75e3b.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DIN Next LT Arabic';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/513071b47bdba774c93a73ad16a75e3b.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'DIN Next LT Arabic';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('https://db.onlinewebfonts.com/t/513071b47bdba774c93a73ad16a75e3b.woff2') format('woff2');
+}

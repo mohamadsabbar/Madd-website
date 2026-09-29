@@ -1,0 +1,793 @@
+/**
+ * لوحة الوكيل — أبيض بسيط + ظل خفيف (متوافق مع ثيم الإدارة)
+ */
+:root {
+    --agent-font-body: 'DIN Next LT Arabic', 'Segoe UI', system-ui, sans-serif;
+    --agent-font-display: 'DIN Next LT Arabic', 'Segoe UI', system-ui, sans-serif;
+    --agent-accent: #1b1b3a;
+    --agent-accent-2: #2b5d66;
+    --agent-accent-2-hover: #1a3f46;
+    --agent-accent-2-soft: rgba(43, 93, 102, 0.12);
+    --agent-surface: #ffffff;
+    --agent-mesh: #f5f5fa;
+    --agent-gradient-bar: linear-gradient(180deg, #1a3f46 0%, #2b5d66 55%, #3a7580 100%);
+    --agent-shadow-accent: 0 8px 24px rgba(43, 93, 102, 0.26);
+}
+
+body.agent-panel {
+    font-family: var(--agent-font-body);
+    font-weight: 500;
+    background: var(--agent-mesh);
+    background-attachment: fixed;
+    letter-spacing: 0.01em;
+    --bs-primary: #2b5d66;
+    --bs-primary-rgb: 43, 93, 102;
+    --bs-link-color: #2b5d66;
+    --bs-link-hover-color: #1a3f46;
+}
+
+body.agent-panel .olivia-sidebar {
+    background: #ffffff;
+    border-inline-start-color: #e5e5e5;
+    border-color: #e5e5e5;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 8px 28px rgba(0, 0, 0, 0.06);
+}
+
+body.agent-panel .olivia-sidebar::before {
+    background: var(--agent-gradient-bar);
+    box-shadow: none;
+}
+
+body.agent-panel .olivia-sidebar-brand {
+    border-bottom-color: #e5e5e5;
+}
+
+body.agent-panel .olivia-sidebar-nav .nav-link:hover {
+    background: var(--agent-accent-2-soft);
+    border-color: rgba(43, 93, 102, 0.22);
+}
+
+body.agent-panel .olivia-sidebar-nav .nav-link:hover i {
+    color: var(--agent-accent-2);
+}
+
+body.agent-panel .olivia-sidebar-nav .nav-link.active {
+    background: linear-gradient(135deg, #1a3f46 0%, #2b5d66 50%, #3a7580 100%);
+    border-color: transparent;
+    box-shadow: var(--agent-shadow-accent);
+}
+
+body.agent-panel .olivia-topbar {
+    background: var(--agent-surface);
+    backdrop-filter: blur(12px);
+    border-color: #e5e5e5;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+}
+
+body.agent-panel .olivia-sidebar-footer {
+    background: #fafafa;
+    border-top-color: #e5e5e5;
+}
+
+body.agent-panel .olivia-topbar-title {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+body.agent-panel .olivia-user-pill {
+    background: #f5f5f5;
+    border-color: #e5e5e5;
+    color: #262626;
+}
+
+/* ——— منطقة المحتوى ——— */
+.agent-zone {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ——— بطل الترحيب ——— */
+.agent-hero {
+    position: relative;
+    border-radius: 26px;
+    padding: 1.75rem 1.85rem 1.9rem;
+    overflow: hidden;
+    color: #171717;
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.06),
+        0 8px 28px rgba(0, 0, 0, 0.06);
+    margin-bottom: 1.5rem;
+}
+
+.agent-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.9;
+    pointer-events: none;
+}
+
+.agent-hero-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.agent-hero-title {
+    font-family: var(--agent-font-display);
+    font-size: 1.55rem;
+    font-weight: 800;
+    margin: 0 0 0.45rem;
+}
+
+.agent-hero-sub {
+    font-size: 0.95rem;
+    font-weight: 600;
+    opacity: 0.95;
+    margin: 0 0 1rem;
+    line-height: 1.65;
+    max-width: 42rem;
+}
+
+.agent-hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 0.45rem 1rem;
+    border-radius: 999px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+}
+
+/* شارة العمولة بجانب اسم المستخدم في الشريط العلوي */
+.agent-topbar-user {
+    justify-content: flex-end;
+}
+
+.agent-topbar-commission {
+    padding: 0.32rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+    white-space: nowrap;
+    border-color: rgba(43, 93, 102, 0.35);
+    background: rgba(43, 93, 102, 0.08);
+    color: #1b1b3a;
+}
+
+.agent-hero-actions .btn-light {
+    font-weight: 800;
+    font-family: var(--agent-font-body);
+    border-radius: 14px;
+    padding: 0.5rem 1.1rem;
+    border: 1px solid #e5e5e5;
+    color: #171717;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.agent-hero-actions .btn-outline-light {
+    font-weight: 700;
+    font-family: var(--agent-font-body);
+    border-radius: 14px;
+    border: 1px solid #e5e5e5;
+    color: #171717;
+    background: #ffffff;
+}
+
+.agent-hero-actions .btn-outline-light:hover {
+    background: #f5f5f5;
+    color: #171717;
+}
+
+/* ——— شبكة المؤشرات ——— */
+.agent-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+@media (max-width: 1199px) {
+    .agent-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 575px) {
+    .agent-kpi-grid { grid-template-columns: 1fr; }
+}
+
+.agent-kpi {
+    border-radius: 20px;
+    padding: 1.2rem 1.25rem 1.3rem;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    background: var(--agent-surface);
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 2px 4px rgba(15, 23, 42, 0.04),
+        0 12px 32px rgba(15, 23, 42, 0.06);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-kpi::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    opacity: 0.95;
+}
+
+.agent-kpi:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+}
+
+.agent-kpi--indigo::before,
+.agent-kpi--teal::before,
+.agent-kpi--amber::before,
+.agent-kpi--rose::before {
+    background: var(--agent-accent-2);
+}
+
+.agent-kpi-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.4rem;
+    font-family: var(--agent-font-body);
+}
+
+.agent-kpi-value {
+    font-family: var(--agent-font-display);
+    font-size: 1.42rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.agent-kpi-hint {
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #94a3b8;
+    margin-top: 0.45rem;
+    line-height: 1.45;
+}
+
+/* ——— صف الشهر ——— */
+.agent-month-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (max-width: 767px) {
+    .agent-month-row { grid-template-columns: 1fr; }
+}
+
+.agent-card-gradient {
+    border-radius: 22px !important;
+    border: 1px solid #e5e5e5 !important;
+    border-top: 3px solid var(--agent-accent-2) !important;
+    background: #ffffff !important;
+    color: #171717 !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06) !important;
+    overflow: hidden;
+}
+
+.agent-card-gradient .agent-kpi-label,
+.agent-card-gradient .agent-kpi-value,
+.agent-card-gradient .agent-month-sub {
+    color: #171717 !important;
+}
+
+.agent-card-soft {
+    border-radius: 22px !important;
+    border: 1px solid rgba(226, 232, 240, 0.95) !important;
+    background: #ffffff !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05) !important;
+}
+
+.agent-month-title {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin-bottom: 0.35rem;
+}
+
+.agent-month-sub {
+    font-size: 0.82rem;
+    font-weight: 600;
+    opacity: 0.92;
+}
+
+.agent-month-num {
+    font-family: var(--agent-font-display);
+    font-size: 2rem;
+    font-weight: 800;
+}
+
+/* ——— صفحات بحث وسجل ——— */
+.agent-page-title {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 1.25rem;
+    color: #0f172a;
+    margin-bottom: 0.35rem;
+}
+
+.agent-page-lead {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 1.25rem;
+}
+
+.agent-card {
+    border-radius: 20px;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    background: var(--agent-surface);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.05);
+    overflow: hidden;
+}
+
+.agent-card-header {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 1rem 1.25rem;
+    background: linear-gradient(180deg, #fafdfd 0%, #f8fafc 100%);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    color: #0f172a;
+}
+
+.agent-search-input {
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 0.85rem 1.1rem !important;
+    font-family: var(--agent-font-body) !important;
+    font-weight: 600 !important;
+}
+
+.agent-search-input:focus {
+    border-color: var(--agent-accent-2) !important;
+    box-shadow: 0 0 0 3px rgba(43, 93, 102, 0.22) !important;
+}
+
+.agent-btn-primary {
+    font-family: var(--agent-font-body) !important;
+    font-weight: 800 !important;
+    border-radius: 16px !important;
+    padding: 0.85rem 1.25rem !important;
+    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.3);
+}
+
+.agent-btn-primary:hover {
+    background: var(--agent-accent-2-hover) !important;
+    color: #fff !important;
+}
+
+.agent-summary-pill {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+}
+
+.agent-sum-xl {
+    font-family: var(--agent-font-display);
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #171717;
+    letter-spacing: -0.02em;
+}
+
+.agent-table {
+    font-family: var(--agent-font-body);
+    font-size: 0.9rem;
+}
+
+.agent-table thead th {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.9rem 1.15rem;
+    background: #fafdfd;
+}
+
+.agent-table tbody td {
+    padding: 0.85rem 1.15rem;
+    vertical-align: middle;
+    font-weight: 600;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.agent-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.agent-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.agent-table code {
+    font-size: 0.82rem;
+    background: #f1f5f9;
+    padding: 0.2rem 0.45rem;
+    border-radius: 8px;
+}
+
+/* ——— أزرار إجراءات الجدول (بحث الوكيل) ——— */
+.agent-table-actions {
+    vertical-align: middle !important;
+    min-width: 220px;
+}
+
+.agent-action-group {
+    display: inline-flex;
+    align-items: stretch;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.agent-btn-renew {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.48rem 1rem;
+    font-family: var(--agent-font-body);
+    font-size: 0.8125rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    color: #fff !important;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%);
+    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.32);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    cursor: pointer;
+}
+
+.agent-btn-renew:hover {
+    color: #fff !important;
+    transform: translateY(-2px);
+    background: var(--agent-accent-2-hover);
+    box-shadow: 0 8px 24px rgba(43, 93, 102, 0.38);
+}
+
+.agent-btn-renew:active {
+    transform: translateY(0);
+    filter: brightness(0.98);
+}
+
+.agent-btn-renew:focus-visible {
+    outline: 2px solid rgba(43, 93, 102, 0.55);
+    outline-offset: 2px;
+}
+
+.agent-btn-renew__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    font-size: 0.95rem;
+    opacity: 0.95;
+}
+
+.agent-btn-renew__text {
+    position: relative;
+    top: 0.5px;
+}
+
+.agent-btn-renew--lg {
+    padding: 0.78rem 1.2rem;
+    font-size: 0.95rem;
+    border-radius: 14px;
+    gap: 0.5rem;
+}
+
+.agent-btn-renew--lg .agent-btn-renew__icon {
+    width: 1.35rem;
+    height: 1.35rem;
+    font-size: 1.05rem;
+}
+
+.agent-btn-detail {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    padding: 0.48rem 0.92rem;
+    font-family: var(--agent-font-body);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #475569;
+    text-decoration: none !important;
+    border-radius: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.55);
+    background: linear-gradient(165deg, #ffffff 0%, #f8fafc 55%, #f1f5f9 100%);
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.agent-btn-detail:hover {
+    color: var(--agent-accent-2) !important;
+    border-color: rgba(43, 93, 102, 0.35);
+    background: var(--agent-accent-2-soft);
+    box-shadow: 0 4px 12px rgba(43, 93, 102, 0.14);
+    transform: translateY(-1px);
+}
+
+.agent-btn-detail:active {
+    transform: translateY(0);
+}
+
+.agent-btn-detail:focus-visible {
+    outline: 2px solid rgba(0, 0, 0, 0.2);
+    outline-offset: 2px;
+}
+
+.agent-btn-detail__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    color: #64748b;
+    transition: color 0.2s ease;
+}
+
+.agent-btn-detail:hover .agent-btn-detail__icon {
+    color: var(--agent-accent-2);
+}
+
+.agent-pill-muted {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    background: #f1f5f9;
+    border-radius: 999px;
+    border: 1px dashed #cbd5e1;
+}
+
+/* عنوان عمود الإجراءات */
+.agent-th-actions {
+    text-align: center !important;
+}
+
+.agent-th-actions i {
+    vertical-align: -0.1em;
+    opacity: 0.7;
+}
+
+/* ——— نافذة تأكيد التجديد ——— */
+.agent-renew-modal .modal-content {
+    border: 1px solid #e5e5e5;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.04),
+        0 24px 56px rgba(0, 0, 0, 0.08);
+}
+
+.agent-renew-modal .modal-header {
+    border: none;
+    padding: 1.35rem 1.5rem 0.75rem;
+    background: #ffffff;
+}
+
+.agent-renew-modal .modal-title {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: #0f172a;
+    width: 100%;
+    text-align: center;
+}
+
+.agent-renew-modal .modal-body {
+    padding: 0.5rem 1.5rem 1.35rem;
+}
+
+.agent-renew-modal__meta {
+    text-align: center;
+    margin-bottom: 1.15rem;
+}
+
+.agent-renew-modal__name {
+    font-family: var(--agent-font-display);
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.agent-renew-modal__plan {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.agent-renew-modal__price-wrap {
+    position: relative;
+    text-align: center;
+    padding: 1.35rem 1rem 1.5rem;
+    border-radius: 20px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.agent-renew-modal__price-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #737373;
+    margin-bottom: 0.5rem;
+}
+
+.agent-renew-modal__price-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+}
+
+.agent-renew-modal__price-num {
+    font-family: var(--agent-font-display);
+    font-size: clamp(2.15rem, 5vw, 2.75rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: #171717;
+}
+
+.agent-renew-modal__price-currency {
+    font-family: var(--agent-font-body);
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #64748b;
+}
+
+.agent-renew-modal__hint {
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #94a3b8;
+    line-height: 1.55;
+    max-width: 18rem;
+    margin-inline: auto;
+}
+
+.agent-renew-modal .modal-footer {
+    border: none;
+    padding: 0 1.5rem 1.5rem;
+    gap: 0.65rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.agent-renew-modal .btn-agent-cancel {
+    font-weight: 700;
+    border-radius: 14px;
+    padding: 0.55rem 1.35rem;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    color: #64748b;
+}
+
+.agent-renew-modal .btn-agent-cancel:hover {
+    background: #f8fafc;
+    color: #334155;
+}
+
+.agent-renew-modal .btn-agent-confirm {
+    font-family: var(--agent-font-body);
+    font-weight: 800;
+    border-radius: 14px;
+    padding: 0.55rem 1.5rem;
+    border: none;
+    color: #fff;
+    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%);
+    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.3);
+}
+
+.agent-renew-modal .btn-agent-confirm:hover {
+    background: var(--agent-accent-2-hover);
+    color: #fff;
+}
+
+.agent-renew-modal .btn-close {
+    opacity: 0.55;
+}
+
+.agent-renew-modal .modal-content {
+    position: relative;
+}
+
+.agent-renew-modal__loading {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(4px);
+}
+
+.agent-renew-modal__loading-inner {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.agent-renew-modal__loading-inner .spinner-border {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-width: 0.2rem;
+    color: var(--agent-accent-2);
+}
+
+.agent-renew-modal__loading-text {
+    margin-top: 0.85rem;
+    margin-bottom: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--agent-accent);
+}
+
+.agent-renew-modal .btn-agent-confirm.is-loading {
+    opacity: 0.85;
+    pointer-events: none;
+    position: relative;
+}
+
+.agent-renew-modal .btn-agent-confirm .agent-renew-submit-spinner {
+    display: none;
+}
+
+.agent-renew-modal .btn-agent-confirm.is-loading .agent-renew-submit-spinner {
+    display: inline-flex;
+}
+
+.agent-renew-modal .btn-agent-confirm.is-loading .agent-renew-submit-label {
+    opacity: 0.65;
+}

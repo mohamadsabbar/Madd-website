@@ -1,0 +1,50 @@
+# MADD website stack — isolated from UISP / GenieACS / MediaMTX
+#
+# Publishes ONLY: 127.0.0.1:8080
+# Host Nginx (ports 80/443) must reverse-proxy madd.ps → this port.
+#
+# DO NOT:
+# - bind 0.0.0.0:80 or :443
+# - attach to unms_* / genieacs_* / mediamtx_* networks
+# - stop or recreate UISP / GenieACS containers
+
+name: madd-website
+
+services:
+  web:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - php
+    ports:
+      # Internal only — Nginx on host owns 80/443
+      - "127.0.0.1:8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ../../dist:/var/www/site:ro
+      - ../../portal/public:/var/www/portal/public:ro
+    networks:
+      - madd_web
+
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    restart: unless-stopped
+    working_dir: /var/www/portal
+    env_file:
+      - ../../portal/.env
+    volumes:
+      - ../../portal:/var/www/portal
+    networks:
+      - madd_web
+    extra_hosts:
+      # Reach host MySQL bound to 127.0.0.1 (Linux Docker)
+      - "host.docker.internal:host-gateway"
+    # No host ports — only reachable by web via Docker network
+
+networks:
+  madd_web:
+    name: madd_web
+    driver: bridge
+    # Isolated — do not reuse unms_public / genieacs_default / mediamtx_default
