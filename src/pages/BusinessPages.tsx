@@ -7,6 +7,7 @@ import { CmsPageHero, PlansGrid, ProgrammingSection, usePageSeo } from '../compo
 import { Reveal } from '../components/Reveal'
 import { ConfigurableIcon } from '../components/ConfigurableIcon'
 import type { BizPillarCard } from '../config/defaultSite'
+import { normalizeBusinessHomeSections, type BusinessHomeSectionId } from '../config/order'
 import { useSiteConfig } from '../context/SiteConfigContext'
 import { submitSiteLead } from '../lib/siteApi'
 
@@ -43,6 +44,7 @@ function BizPillarLink({ pillar, tone }: { pillar: BizPillarCard; tone: string }
 export function BusinessHomePage() {
   const { config } = useSiteConfig()
   const b = config.business
+  const sections = normalizeBusinessHomeSections(config.layout?.businessHomeSections)
 
   const quick = b.quickLinks.filter((q) => {
     if (q.link.includes('/pos')) return config.visibility.showBusinessPos
@@ -51,145 +53,167 @@ export function BusinessHomePage() {
     return true
   })
 
+  const renderSection = (id: BusinessHomeSectionId) => {
+    switch (id) {
+      case 'pillars':
+        return (
+          <section key="pillars" className="section biz-pillars">
+            <div className="container">
+              {b.pillarsTitle ? (
+                <Reveal>
+                  <h2 className="section__title">{b.pillarsTitle}</h2>
+                </Reveal>
+              ) : null}
+              <div className="biz-pillars__grid">
+                {b.pillars.slice(0, 3).map((p, idx) => (
+                  <Reveal key={p.id}>
+                    <BizPillarLink
+                      pillar={p}
+                      tone={PILLAR_PLACEHOLDER_TONES[idx % PILLAR_PLACEHOLDER_TONES.length]}
+                    />
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+      case 'intro':
+        return (
+          <section key="intro" className="section biz-intro">
+            <div className="container biz-intro__inner">
+              <Reveal>
+                <p className="section__kicker">مدد للأعمال</p>
+                <h2 className="section__title section__title--start">من الاتصال إلى Domain و Hosting و E-Card</h2>
+                <p className="section__lead biz-intro__lead">
+                  نقدّم للشركات خط اتصال، أنظمة تشغيل، وحضوراً رقمياً كاملاً — نطاق، استضافة، بريد مؤسسي، وبطاقة
+                  إلكترونية، مع محتوى وصور قابلة للتوسع دون الاعتماد على لون واحد في كل الصفحة.
+                </p>
+              </Reveal>
+            </div>
+          </section>
+        )
+      case 'connect':
+        return (
+          <section key="connect" className="section biz-quick-section biz-quick-section--connect">
+            <div className="container">
+              <Reveal>
+                <h2 className="section__title section__title--start">{b.connectTitle}</h2>
+                <p className="section__lead">{b.connectLead}</p>
+              </Reveal>
+              <div className="biz-quick biz-quick--many">
+                {quick.slice(0, 4).map((i) => (
+                  <Reveal key={i.id}>
+                    <Link to={i.link} className={`biz-quick__card biz-quick__card--${i.tone || 'teal'}`}>
+                      <span className="biz-quick__thumb" aria-hidden="true">
+                        <ConfigurableIcon
+                          icon={i.icon}
+                          iconDataUrl={i.iconDataUrl}
+                          className="biz-quick__icon"
+                          imgClassName="biz-quick__icon-img"
+                          alt=""
+                        />
+                      </span>
+                      <span className="biz-quick__text">
+                        <strong>{i.title}</strong>
+                        <span>{i.text}</span>
+                      </span>
+                      <span className="biz-quick__arrow">‹</span>
+                    </Link>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          </section>
+        )
+      case 'digital':
+        return (
+          <section key="digital" className="section biz-digital">
+            <div className="container">
+              <Reveal>
+                <h2 className="section__title section__title--start">{b.digitalTitle}</h2>
+                <p className="section__lead">{b.digitalLead}</p>
+              </Reveal>
+              <div className="biz-quick biz-quick--many">
+                {quick.slice(4).map((i) => (
+                  <Reveal key={i.id}>
+                    <Link to={i.link} className={`biz-quick__card biz-quick__card--${i.tone || 'teal'}`}>
+                      <span className="biz-quick__thumb" aria-hidden="true">
+                        <ConfigurableIcon
+                          icon={i.icon}
+                          iconDataUrl={i.iconDataUrl}
+                          className="biz-quick__icon"
+                          imgClassName="biz-quick__icon-img"
+                          alt=""
+                        />
+                      </span>
+                      <span className="biz-quick__text">
+                        <strong>{i.title}</strong>
+                        <span>{i.text}</span>
+                      </span>
+                      <span className="biz-quick__arrow">‹</span>
+                    </Link>
+                  </Reveal>
+                ))}
+              </div>
+              <div className="biz-offerings-grid">
+                {b.digitalOfferings.map((o) => (
+                  <Reveal key={o.id}>
+                    <div id={o.id}>
+                      <BusinessOfferingCard offering={o} />
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+              <p className="biz-digital__more">
+                <Link to="/business/web" className="text-link">
+                  صفحة الحضور الرقمي الكاملة ‹
+                </Link>
+              </p>
+            </div>
+          </section>
+        )
+      case 'bundle':
+        return (
+          <section key="bundle" className="section biz-bundle">
+            <div className="container biz-bundle__inner">
+              <Reveal>
+                <h2 className="section__title section__title--start">{b.bundleTitle}</h2>
+                <p className="section__lead">{b.bundleText}</p>
+                <ul className="biz-bundle__list">
+                  {b.bundleItems.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+                <Link to="/business/join" className="btn btn--primary">
+                  اطلب باقة أعمال
+                </Link>
+              </Reveal>
+            </div>
+          </section>
+        )
+      case 'cta':
+        return (
+          <section key="cta" className="biz-cta-band biz-cta-band--warm">
+            <div className="container biz-cta-band__inner">
+              <div>
+                <h2>جاهز لعرض مخصّص؟</h2>
+                <p>Domain، Hosting، E-Card، اتصال، أو POS — أخبرنا باحتياجك وسنبني العرض المناسب.</p>
+              </div>
+              <Link to="/business/join" className="btn btn--primary">
+                اطلب عرضاً
+              </Link>
+            </div>
+          </section>
+        )
+      default:
+        return null
+    }
+  }
+
   return (
     <>
       <HeroSlider audience="business" />
-      <section className="section biz-intro">
-        <div className="container biz-intro__inner">
-          <Reveal>
-            <p className="section__kicker">مدد للأعمال</p>
-            <h2 className="section__title section__title--start">من الاتصال إلى Domain و Hosting و E-Card</h2>
-            <p className="section__lead biz-intro__lead">
-              نقدّم للشركات خط اتصال، أنظمة تشغيل، وحضوراً رقمياً كاملاً — نطاق، استضافة، بريد مؤسسي، وبطاقة
-              إلكترونية، مع محتوى وصور قابلة للتوسع دون الاعتماد على لون واحد في كل الصفحة.
-            </p>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="section biz-quick-section biz-quick-section--connect">
-        <div className="container">
-          <Reveal>
-            <h2 className="section__title section__title--start">{b.connectTitle}</h2>
-            <p className="section__lead">{b.connectLead}</p>
-          </Reveal>
-          <div className="biz-quick biz-quick--many">
-            {quick.slice(0, 4).map((i) => (
-              <Reveal key={i.id}>
-                <Link to={i.link} className={`biz-quick__card biz-quick__card--${i.tone || 'teal'}`}>
-                  <span className="biz-quick__thumb" aria-hidden="true">
-                    <ConfigurableIcon
-                      icon={i.icon}
-                      iconDataUrl={i.iconDataUrl}
-                      className="biz-quick__icon"
-                      imgClassName="biz-quick__icon-img"
-                      alt=""
-                    />
-                  </span>
-                  <span className="biz-quick__text">
-                    <strong>{i.title}</strong>
-                    <span>{i.text}</span>
-                  </span>
-                  <span className="biz-quick__arrow">‹</span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section biz-digital">
-        <div className="container">
-          <Reveal>
-            <h2 className="section__title section__title--start">{b.digitalTitle}</h2>
-            <p className="section__lead">{b.digitalLead}</p>
-          </Reveal>
-          <div className="biz-quick biz-quick--many">
-            {quick.slice(4).map((i) => (
-              <Reveal key={i.id}>
-                <Link to={i.link} className={`biz-quick__card biz-quick__card--${i.tone || 'teal'}`}>
-                  <span className="biz-quick__thumb" aria-hidden="true">
-                    <ConfigurableIcon
-                      icon={i.icon}
-                      iconDataUrl={i.iconDataUrl}
-                      className="biz-quick__icon"
-                      imgClassName="biz-quick__icon-img"
-                      alt=""
-                    />
-                  </span>
-                  <span className="biz-quick__text">
-                    <strong>{i.title}</strong>
-                    <span>{i.text}</span>
-                  </span>
-                  <span className="biz-quick__arrow">‹</span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-          <div className="biz-offerings-grid">
-            {b.digitalOfferings.map((o) => (
-              <Reveal key={o.id}>
-                <div id={o.id}>
-                  <BusinessOfferingCard offering={o} />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <p className="biz-digital__more">
-            <Link to="/business/web" className="text-link">
-              صفحة الحضور الرقمي الكاملة ‹
-            </Link>
-          </p>
-        </div>
-      </section>
-
-      <section className="section biz-bundle">
-        <div className="container biz-bundle__inner">
-          <Reveal>
-            <h2 className="section__title section__title--start">{b.bundleTitle}</h2>
-            <p className="section__lead">{b.bundleText}</p>
-            <ul className="biz-bundle__list">
-              {b.bundleItems.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <Link to="/business/join" className="btn btn--primary">
-              اطلب باقة أعمال
-            </Link>
-          </Reveal>
-        </div>
-      </section>
-
-      <section className="section biz-pillars">
-        <div className="container">
-          {b.pillarsTitle ? (
-            <Reveal>
-              <h2 className="section__title">{b.pillarsTitle}</h2>
-            </Reveal>
-          ) : null}
-          <div className="biz-pillars__grid">
-            {b.pillars.slice(0, 3).map((p, idx) => (
-              <Reveal key={p.id}>
-                <BizPillarLink
-                  pillar={p}
-                  tone={PILLAR_PLACEHOLDER_TONES[idx % PILLAR_PLACEHOLDER_TONES.length]}
-                />
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section className="biz-cta-band biz-cta-band--warm">
-        <div className="container biz-cta-band__inner">
-          <div>
-            <h2>جاهز لعرض مخصّص؟</h2>
-            <p>Domain، Hosting، E-Card، اتصال، أو POS — أخبرنا باحتياجك وسنبني العرض المناسب.</p>
-          </div>
-          <Link to="/business/join" className="btn btn--primary">
-            اطلب عرضاً
-          </Link>
-        </div>
-      </section>
+      {sections.map((id) => renderSection(id))}
     </>
   )
 }

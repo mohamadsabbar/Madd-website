@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link, Navigate, Outlet, useNavigate } from 'react-router-dom'
 import { AUTH_KEY, ADMIN_PASSWORD_SESSION, type HeroSlide, type OfferConfig } from '../config/defaultSite'
-import { HOME_SECTION_LABELS, moveItem, normalizeHomeSections, type HomeSectionId } from '../config/order'
+import { HOME_SECTION_LABELS, BUSINESS_HOME_SECTION_LABELS, moveItem, normalizeHomeSections, normalizeBusinessHomeSections, type HomeSectionId, type BusinessHomeSectionId } from '../config/order'
 import { SERVICE_ICON_OPTIONS } from '../components/ServiceIcon'
 import { useSiteConfig } from '../context/SiteConfigContext'
 import { fetchSiteLeads, updateSiteLeadStatus } from '../lib/siteApi'
@@ -1693,9 +1693,11 @@ export function AdminDigital() {
 
 export function AdminOrder() {
   const { config, setConfig } = useSiteConfig()
-  const sections = normalizeHomeSections(config.layout?.homeSections)
+  const [tab, setTab] = useState<'individuals' | 'business'>('individuals')
+  const homeSections = normalizeHomeSections(config.layout?.homeSections)
+  const businessSections = normalizeBusinessHomeSections(config.layout?.businessHomeSections)
 
-  const moveSection = (from: number, to: number) => {
+  const moveHomeSection = (from: number, to: number) => {
     setConfig((prev) => ({
       ...prev,
       layout: {
@@ -1705,23 +1707,71 @@ export function AdminOrder() {
     }))
   }
 
+  const moveBusinessSection = (from: number, to: number) => {
+    setConfig((prev) => ({
+      ...prev,
+      layout: {
+        ...prev.layout,
+        businessHomeSections: moveItem(
+          normalizeBusinessHomeSections(prev.layout?.businessHomeSections),
+          from,
+          to,
+        ),
+      },
+    }))
+  }
+
   return (
     <div className="admin-page">
       <h1>ترتيب الأقسام</h1>
       <p className="admin-lead">
-        رتّب أقسام الصفحة الرئيسية (بعد الهيرو). الهيرو ثابت في الأعلى. استخدم ↑ ↓ لتغيير الترتيب.
+        رتّب الأقسام بعد السلايدر. السلايدر ثابت في الأعلى. استخدم ↑ ↓ لتغيير الترتيب ثم احفظ من شريط الإدارة.
       </p>
+      <div className="admin-tabs" role="tablist">
+        <button
+          type="button"
+          className={`admin-tab${tab === 'individuals' ? ' is-active' : ''}`}
+          onClick={() => setTab('individuals')}
+        >
+          أفراد
+        </button>
+        <button
+          type="button"
+          className={`admin-tab${tab === 'business' ? ' is-active' : ''}`}
+          onClick={() => setTab('business')}
+        >
+          أعمال
+        </button>
+      </div>
       <div className="admin-form">
-        <h2>الصفحة الرئيسية</h2>
-        {sections.map((id, i) => (
-          <div key={id} className="admin-order-row">
-            <span className="admin-order-row__num">{i + 1}</span>
-            <strong className="admin-order-row__label">{HOME_SECTION_LABELS[id as HomeSectionId]}</strong>
-            <ReorderButtons index={i} total={sections.length} onMove={moveSection} />
-          </div>
-        ))}
+        {tab === 'individuals' ? (
+          <>
+            <h2>الصفحة الرئيسية (أفراد)</h2>
+            {homeSections.map((id, i) => (
+              <div key={id} className="admin-order-row">
+                <span className="admin-order-row__num">{i + 1}</span>
+                <strong className="admin-order-row__label">{HOME_SECTION_LABELS[id as HomeSectionId]}</strong>
+                <ReorderButtons index={i} total={homeSections.length} onMove={moveHomeSection} />
+              </div>
+            ))}
+          </>
+        ) : (
+          <>
+            <h2>صفحة الأعمال /business</h2>
+            {businessSections.map((id, i) => (
+              <div key={id} className="admin-order-row">
+                <span className="admin-order-row__num">{i + 1}</span>
+                <strong className="admin-order-row__label">
+                  {BUSINESS_HOME_SECTION_LABELS[id as BusinessHomeSectionId]}
+                </strong>
+                <ReorderButtons index={i} total={businessSections.length} onMove={moveBusinessSection} />
+              </div>
+            ))}
+          </>
+        )}
         <p className="admin-hint">
-          لترتيب الباقات أو العروض أو الأسئلة داخل كل قائمة، افتح صفحتها واستخدم أزرار ↑ ↓ على كل عنصر.
+          محتوى كل قسم (عناوين، صور، روابط) من صفحات الإدارة الخاصة به — مثلاً «لماذا مدد» من قسم الأعمدة في صفحة
+          الأعمال.
         </p>
       </div>
     </div>

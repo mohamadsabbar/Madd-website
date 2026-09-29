@@ -1,5 +1,10 @@
 import type { MenusConfig } from './menus'
 import { DEFAULT_MENUS } from './menus'
+import {
+  DEFAULT_BUSINESS_HOME_SECTIONS,
+  normalizeBusinessHomeSections,
+  type BusinessHomeSectionId,
+} from './order'
 
 export type PlanConfig = {
   id: string
@@ -29,6 +34,7 @@ export type BenefitConfig = {
   iconDataUrl?: string | null
 }
 export type HomeSectionId = 'benefits' | 'plans' | 'programming'
+export type { BusinessHomeSectionId }
 
 export type {
   MenuColumn,
@@ -141,6 +147,7 @@ export type SiteConfig = {
   }
   layout: {
     homeSections: HomeSectionId[]
+    businessHomeSections: BusinessHomeSectionId[]
   }
   menus: MenusConfig
   admin: {
@@ -308,6 +315,7 @@ export const DEFAULT_SITE: SiteConfig = {
   },
   layout: {
     homeSections: ['benefits', 'plans', 'programming'],
+    businessHomeSections: [...DEFAULT_BUSINESS_HOME_SECTIONS],
   },
   menus: structuredClone(DEFAULT_MENUS),
   admin: {
@@ -342,7 +350,7 @@ export const DEFAULT_SITE: SiteConfig = {
       { title: 'التغطية', text: '', link: '/coverage', icon: 'coverage' },
       { title: 'العروض', text: '', link: '/offers', icon: 'offers' },
       { title: 'الدعم', text: '', link: '/support', icon: 'support' },
-      { title: 'بوابة المشترك', text: '', link: '/my/login', icon: 'portal' },
+      { title: 'بوابة المشترك', text: '', link: 'https://my.madd.ps/my/login', icon: 'portal' },
       { title: 'اطلب الآن', text: '', link: '/order', icon: 'sim' },
     ],
   },
@@ -961,6 +969,7 @@ export function normalizeSiteConfig(raw: Partial<SiteConfig> | null | undefined)
   const merged = deepMergeSite(structuredClone(DEFAULT_SITE), raw || {})
   merged.layout = {
     homeSections: normalizeHomeSectionsSafe(merged.layout?.homeSections),
+    businessHomeSections: normalizeBusinessHomeSections(merged.layout?.businessHomeSections),
   }
   if (!merged.home.slides?.length) {
     merged.home.slides = structuredClone(DEFAULT_SITE.home.slides)
@@ -1129,6 +1138,7 @@ export function deepMergeSite(base: SiteConfig, patch: Partial<SiteConfig>): Sit
       ...base.layout,
       ...patch.layout,
       homeSections: patch.layout?.homeSections ?? base.layout.homeSections,
+      businessHomeSections: patch.layout?.businessHomeSections ?? base.layout.businessHomeSections,
     },
     menus: {
       individuals: patch.menus?.individuals ?? base.menus.individuals,
