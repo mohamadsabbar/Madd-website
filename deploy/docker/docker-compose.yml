@@ -34,6 +34,9 @@ services:
     working_dir: /var/www/portal
     env_file:
       - ../../portal/.env
+    environment:
+      # Reach host MariaDB from container (overrides .env if set to 127.0.0.1)
+      DB_HOST: host.docker.internal
     volumes:
       - ../../portal:/var/www/portal
     networks:

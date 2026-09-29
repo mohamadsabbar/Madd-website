@@ -81,6 +81,7 @@ export type PosSectionConfig = {
 
 export type PosStatConfig = { id: string; value: string; label: string }
 export type Testimonial = { id: string; name: string; text: string; role: string }
+export type TrustStat = { id: string; value: string; label: string }
 export type ValueCard = { id: string; title: string; text: string }
 export type BizPillarCard = {
   id: string
