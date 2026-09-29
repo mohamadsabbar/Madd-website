@@ -29,11 +29,12 @@
             </div>
             <div class="cp-field">
                 <label for="password">كلمة المرور</label>
-                <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="كلمة المرور">
+                <input id="password" type="password" name="password" required autocomplete="current-password" placeholder="كلمة المرور" minlength="1">
             </div>
             <button class="cp-btn cp-btn--primary cp-btn--block" type="submit">دخول</button>
         </form>
 
+        <p class="cp-hint">إن لم تغيّر كلمة المرور من قبل، استخدم كلمة المرور الافتراضية التي زوّدتك بها الشركة.</p>
         <p class="cp-hint">للموظفين والوكلاء: <a href="{{ route('login') }}">دخول الإدارة</a></p>
     </div>
 </div>

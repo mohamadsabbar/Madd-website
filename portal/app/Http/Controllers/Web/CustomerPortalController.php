@@ -36,6 +36,9 @@ class CustomerPortalController extends Controller
         $data = $request->validate([
             'login' => ['required', 'string', 'max:100'],
             'password' => ['required', 'string'],
+        ], [
+            'login.required' => 'أدخل رقم الجوال أو اسم المستخدم.',
+            'password.required' => 'أدخل كلمة المرور.',
         ]);
 
         $login = trim($data['login']);
@@ -161,13 +164,24 @@ class CustomerPortalController extends Controller
 
     private function findSubscriberUser(string $login): ?User
     {
-        // هاتف
-        $byPhone = User::query()
-            ->where('role', 'subscriber')
-            ->where('phone', $login)
-            ->first();
-        if ($byPhone) {
-            return $byPhone;
+        // هاتف (تطابق مرن: 0599… / 599… / +970…)
+        $phoneVariants = $this->phoneLookupVariants($login);
+        if ($phoneVariants !== []) {
+            $byPhone = User::query()
+                ->where('role', 'subscriber')
+                ->whereIn('phone', $phoneVariants)
+                ->first();
+            if ($byPhone) {
+                return $byPhone;
+            }
+
+            $subByPhone = Subscriber::query()
+                ->whereIn('phone', $phoneVariants)
+                ->whereNotNull('user_id')
+                ->first();
+            if ($subByPhone?->user && $subByPhone->user->role === 'subscriber') {
+                return $subByPhone->user;
+            }
         }
 
         // بريد
@@ -184,6 +198,36 @@ class CustomerPortalController extends Controller
             ->whereNotNull('user_id')
             ->first();
 
-        return $sub?->user;
+        return $sub?->user && $sub->user->role === 'subscriber' ? $sub->user : null;
+    }
+
+    /** @return list<string> */
+    private function phoneLookupVariants(string $login): array
+    {
+        $digits = preg_replace('/\D+/', '', $login) ?? '';
+        if ($digits === '' || strlen($digits) < 9) {
+            return [$login];
+        }
+
+        // Palestine mobile: 059xxxxxxx / 97259xxxxxxx
+        if (str_starts_with($digits, '970')) {
+            $digits = substr($digits, 3);
+        } elseif (str_starts_with($digits, '972')) {
+            $digits = substr($digits, 3);
+        }
+
+        $local = ltrim($digits, '0');
+        $withZero = str_starts_with($digits, '0') ? $digits : '0'.$local;
+
+        return array_values(array_unique(array_filter([
+            $login,
+            $digits,
+            $local,
+            $withZero,
+            '970'.$local,
+            '+970'.$local,
+            '972'.$local,
+            '+972'.$local,
+        ])));
     }
 }

@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/public', '/', 301);
 Route::redirect('/public/', '/', 301);
 
-/** الرئيسية: صفحة الشركة للزائر؛ للمسجّل يُوجَّه إلى لوحته. */
+/** الرئيسية: للمسجّل لوحته؛ للزائر دخول المشترك (البوابة على my.madd.ps). */
 Route::get('/', function () {
     if (Auth::check()) {
         return match (Auth::user()->role) {
@@ -28,7 +28,7 @@ Route::get('/', function () {
         };
     }
 
-    return view('public.company-home');
+    return redirect()->route('web.customer.login');
 })->name('home');
 
 /** توافق مع الروابط القديمة التي كانت تستخدم `/company` */
