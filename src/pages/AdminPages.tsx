@@ -751,6 +751,139 @@ export function AdminContent() {
           </div>
         ))}
 
+        <h2>صفحة الأعمال — شركاؤنا</h2>
+        <p className="admin-hint">شعارات الشركاء فقط (بدون نص على الموقع). ارفع صورة الشعار ويمكن ربطها اختيارياً.</p>
+        <label>
+          عنوان القسم
+          <input
+            value={config.business.partnersTitle || ''}
+            onChange={(e) =>
+              updateConfig({ business: { ...config.business, partnersTitle: e.target.value } })
+            }
+          />
+        </label>
+        {(config.business.partners || []).map((p, i) => (
+          <div key={p.id} className="admin-plan-card">
+            <div className="admin-plan-card__top">
+              <strong>شعار {i + 1}</strong>
+              <div className="admin-plan-card__actions">
+                <ReorderButtons
+                  index={i}
+                  total={(config.business.partners || []).length}
+                  onMove={(from, to) =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      business: {
+                        ...prev.business,
+                        partners: moveItem(prev.business.partners || [], from, to),
+                      },
+                    }))
+                  }
+                />
+                <button
+                  type="button"
+                  className="btn btn--danger"
+                  onClick={() =>
+                    setConfig((prev) => ({
+                      ...prev,
+                      business: {
+                        ...prev.business,
+                        partners: (prev.business.partners || []).filter((_, j) => j !== i),
+                      },
+                    }))
+                  }
+                >
+                  حذف
+                </button>
+              </div>
+            </div>
+            <label>
+              صورة الشعار
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (!file) return
+                  const reader = new FileReader()
+                  reader.onload = () => {
+                    setConfig((prev) => {
+                      const partners = [...(prev.business.partners || [])]
+                      partners[i] = { ...partners[i], imageDataUrl: String(reader.result) }
+                      return { ...prev, business: { ...prev.business, partners } }
+                    })
+                  }
+                  reader.readAsDataURL(file)
+                  e.target.value = ''
+                }}
+              />
+            </label>
+            {p.imageDataUrl ? (
+              <div className="admin-thumb">
+                <img src={p.imageDataUrl} alt="" />
+                <button
+                  type="button"
+                  className="btn btn--ghost"
+                  onClick={() =>
+                    setConfig((prev) => {
+                      const partners = [...(prev.business.partners || [])]
+                      partners[i] = { ...partners[i], imageDataUrl: null }
+                      return { ...prev, business: { ...prev.business, partners } }
+                    })
+                  }
+                >
+                  إزالة الصورة
+                </button>
+              </div>
+            ) : null}
+            <input
+              value={p.alt}
+              placeholder="وصف مختصر (alt)"
+              onChange={(e) => {
+                setConfig((prev) => {
+                  const partners = [...(prev.business.partners || [])]
+                  partners[i] = { ...partners[i], alt: e.target.value }
+                  return { ...prev, business: { ...prev.business, partners } }
+                })
+              }}
+            />
+            <input
+              value={p.link || ''}
+              placeholder="رابط اختياري (https://...)"
+              onChange={(e) => {
+                setConfig((prev) => {
+                  const partners = [...(prev.business.partners || [])]
+                  partners[i] = { ...partners[i], link: e.target.value }
+                  return { ...prev, business: { ...prev.business, partners } }
+                })
+              }}
+            />
+          </div>
+        ))}
+        <button
+          type="button"
+          className="btn btn--ghost"
+          onClick={() =>
+            setConfig((prev) => ({
+              ...prev,
+              business: {
+                ...prev.business,
+                partners: [
+                  ...(prev.business.partners || []),
+                  {
+                    id: `partner-${Date.now()}`,
+                    imageDataUrl: null,
+                    alt: 'شريك',
+                    link: '',
+                  },
+                ],
+              },
+            }))
+          }
+        >
+          + إضافة شريك
+        </button>
+
         <h2>تسميات الشريط العلوي</h2>
         <label>
           أفراد

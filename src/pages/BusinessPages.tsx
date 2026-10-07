@@ -172,6 +172,57 @@ export function BusinessHomePage() {
             </div>
           </section>
         )
+      case 'partners': {
+        const logos = (b.partners || []).filter((p) => p.imageDataUrl)
+        if (!logos.length) return null
+        return (
+          <section key="partners" className="section biz-partners">
+            <div className="container">
+              {b.partnersTitle ? (
+                <Reveal>
+                  <h2 className="section__title">{b.partnersTitle}</h2>
+                </Reveal>
+              ) : null}
+              <div className="biz-partners__grid">
+                {logos.map((p) => {
+                  const img = (
+                    <img src={p.imageDataUrl!} alt={p.alt || ''} className="biz-partners__logo" loading="lazy" />
+                  )
+                  if (p.link?.startsWith('http')) {
+                    return (
+                      <Reveal key={p.id}>
+                        <a
+                          href={p.link}
+                          className="biz-partners__item"
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={p.alt || 'شريك'}
+                        >
+                          {img}
+                        </a>
+                      </Reveal>
+                    )
+                  }
+                  if (p.link) {
+                    return (
+                      <Reveal key={p.id}>
+                        <Link to={p.link} className="biz-partners__item" aria-label={p.alt || 'شريك'}>
+                          {img}
+                        </Link>
+                      </Reveal>
+                    )
+                  }
+                  return (
+                    <Reveal key={p.id}>
+                      <div className="biz-partners__item">{img}</div>
+                    </Reveal>
+                  )
+                })}
+              </div>
+            </div>
+          </section>
+        )
+      }
       case 'bundle':
         return (
           <section key="bundle" className="section biz-bundle">

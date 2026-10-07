@@ -97,6 +97,13 @@ export type BizPillarCard = {
   linkLabel?: string
   imageDataUrl: string | null
 }
+
+export type PartnerLogo = {
+  id: string
+  imageDataUrl: string | null
+  alt: string
+  link?: string
+}
 export type BizCard = {
   id: string
   title: string
@@ -211,6 +218,8 @@ export type SiteConfig = {
     bundleText: string
     bundleItems: string[]
     pillarsTitle: string
+    partnersTitle: string
+    partners: PartnerLogo[]
   }
   plansUi: {
     currency: string
@@ -642,6 +651,13 @@ export const DEFAULT_SITE: SiteConfig = {
         tone: 'gold',
       },
     ],
+    partnersTitle: 'شركاؤنا',
+    partners: [
+      { id: 'partner-1', imageDataUrl: null, alt: 'شريك 1', link: '' },
+      { id: 'partner-2', imageDataUrl: null, alt: 'شريك 2', link: '' },
+      { id: 'partner-3', imageDataUrl: null, alt: 'شريك 3', link: '' },
+      { id: 'partner-4', imageDataUrl: null, alt: 'شريك 4', link: '' },
+    ],
     pillarsTitle: 'لماذا مدد للأعمال؟',
     pillars: [
       {
@@ -1054,6 +1070,19 @@ export function normalizeSiteConfig(raw: Partial<SiteConfig> | null | undefined)
   if (!merged.business.pillarsTitle) {
     merged.business.pillarsTitle = DEFAULT_SITE.business.pillarsTitle
   }
+  if (!merged.business.partnersTitle) {
+    merged.business.partnersTitle = DEFAULT_SITE.business.partnersTitle
+  }
+  if (!Array.isArray(merged.business.partners)) {
+    merged.business.partners = structuredClone(DEFAULT_SITE.business.partners)
+  } else {
+    merged.business.partners = merged.business.partners.map((p, i) => ({
+      id: p.id || `partner-${i + 1}`,
+      imageDataUrl: p.imageDataUrl ?? null,
+      alt: p.alt || `شريك ${i + 1}`,
+      link: p.link || '',
+    }))
+  }
 
   if ((merged.business.quickLinks?.length || 0) < 6) {
     merged.business.quickLinks = structuredClone(DEFAULT_SITE.business.quickLinks)
@@ -1199,6 +1228,7 @@ export function deepMergeSite(base: SiteConfig, patch: Partial<SiteConfig>): Sit
       ...patch.business,
       quickLinks: patch.business?.quickLinks ?? base.business.quickLinks,
       pillars: patch.business?.pillars ?? base.business.pillars,
+      partners: patch.business?.partners ?? base.business.partners,
       digitalOfferings: patch.business?.digitalOfferings ?? base.business.digitalOfferings,
       bundleItems: patch.business?.bundleItems ?? base.business.bundleItems,
     },

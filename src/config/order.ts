@@ -35,6 +35,7 @@ export type BusinessHomeSectionId =
   | 'intro'
   | 'connect'
   | 'digital'
+  | 'partners'
   | 'bundle'
   | 'cta'
 
@@ -43,6 +44,7 @@ export const BUSINESS_HOME_SECTION_LABELS: Record<BusinessHomeSectionId, string>
   intro: 'مقدمة الأعمال',
   connect: 'حلول الاتصال والتشغيل',
   digital: 'الحضور الرقمي',
+  partners: 'شركاؤنا',
   bundle: 'باقة الأعمال',
   cta: 'شريط الدعوة للتواصل',
 }
@@ -52,6 +54,7 @@ export const DEFAULT_BUSINESS_HOME_SECTIONS: BusinessHomeSectionId[] = [
   'intro',
   'connect',
   'digital',
+  'partners',
   'bundle',
   'cta',
 ]
