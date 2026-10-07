@@ -2,16 +2,16 @@
  * لوحة الوكيل — أبيض بسيط + ظل خفيف (متوافق مع ثيم الإدارة)
  */
 :root {
-    --agent-font-body: 'DIN Next LT Arabic', 'Segoe UI', system-ui, sans-serif;
-    --agent-font-display: 'DIN Next LT Arabic', 'Segoe UI', system-ui, sans-serif;
-    --agent-accent: #1b1b3a;
-    --agent-accent-2: #2b5d66;
-    --agent-accent-2-hover: #1a3f46;
-    --agent-accent-2-soft: rgba(43, 93, 102, 0.12);
+    --agent-font-body: 'Neo Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+    --agent-font-display: 'Neo Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+    --agent-accent: #0b1220;
+    --agent-accent-2: #246cf0;
+    --agent-accent-2-hover: #0c3c9c;
+    --agent-accent-2-soft: rgba(36, 108, 240, 0.12);
     --agent-surface: #ffffff;
-    --agent-mesh: #f5f5fa;
-    --agent-gradient-bar: linear-gradient(180deg, #1a3f46 0%, #2b5d66 55%, #3a7580 100%);
-    --agent-shadow-accent: 0 8px 24px rgba(43, 93, 102, 0.26);
+    --agent-mesh: #f4f8ff;
+    --agent-gradient-bar: linear-gradient(180deg, #0c3c9c 0%, #246cf0 55%, #2976f9 100%);
+    --agent-shadow-accent: 0 8px 24px rgba(36, 108, 240, 0.26);
 }
 
 body.agent-panel {
@@ -20,10 +20,10 @@ body.agent-panel {
     background: var(--agent-mesh);
     background-attachment: fixed;
     letter-spacing: 0.01em;
-    --bs-primary: #2b5d66;
-    --bs-primary-rgb: 43, 93, 102;
-    --bs-link-color: #2b5d66;
-    --bs-link-hover-color: #1a3f46;
+    --bs-primary: #246cf0;
+    --bs-primary-rgb: 36, 108, 240;
+    --bs-link-color: #246cf0;
+    --bs-link-hover-color: #0c3c9c;
 }
 
 body.agent-panel .olivia-sidebar {
@@ -46,7 +46,7 @@ body.agent-panel .olivia-sidebar-brand {
 
 body.agent-panel .olivia-sidebar-nav .nav-link:hover {
     background: var(--agent-accent-2-soft);
-    border-color: rgba(43, 93, 102, 0.22);
+    border-color: rgba(36, 108, 240, 0.22);
 }
 
 body.agent-panel .olivia-sidebar-nav .nav-link:hover i {
@@ -54,7 +54,7 @@ body.agent-panel .olivia-sidebar-nav .nav-link:hover i {
 }
 
 body.agent-panel .olivia-sidebar-nav .nav-link.active {
-    background: linear-gradient(135deg, #1a3f46 0%, #2b5d66 50%, #3a7580 100%);
+    background: linear-gradient(135deg, #0c3c9c 0%, #246cf0 50%, #2976f9 100%);
     border-color: transparent;
     box-shadow: var(--agent-shadow-accent);
 }
@@ -156,8 +156,8 @@ body.agent-panel .olivia-user-pill {
     font-size: 0.8rem;
     font-weight: 800;
     white-space: nowrap;
-    border-color: rgba(43, 93, 102, 0.35);
-    background: rgba(43, 93, 102, 0.08);
+    border-color: rgba(36, 108, 240, 0.35);
+    background: rgba(36, 108, 240, 0.08);
     color: #1b1b3a;
 }
 
@@ -362,7 +362,7 @@ body.agent-panel .olivia-user-pill {
 
 .agent-search-input:focus {
     border-color: var(--agent-accent-2) !important;
-    box-shadow: 0 0 0 3px rgba(43, 93, 102, 0.22) !important;
+    box-shadow: 0 0 0 3px rgba(36, 108, 240, 0.22) !important;
 }
 
 .agent-btn-primary {
@@ -370,9 +370,9 @@ body.agent-panel .olivia-user-pill {
     font-weight: 800 !important;
     border-radius: 16px !important;
     padding: 0.85rem 1.25rem !important;
-    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%) !important;
+    background: linear-gradient(180deg, #2976f9 0%, var(--agent-accent-2) 100%) !important;
     border: none !important;
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.3);
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.3);
 }
 
 .agent-btn-primary:hover {
@@ -466,8 +466,8 @@ body.agent-panel .olivia-user-pill {
     color: #fff !important;
     border: none;
     border-radius: 12px;
-    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%);
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.32);
+    background: linear-gradient(180deg, #2976f9 0%, var(--agent-accent-2) 100%);
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.32);
     transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
     cursor: pointer;
 }
@@ -476,7 +476,7 @@ body.agent-panel .olivia-user-pill {
     color: #fff !important;
     transform: translateY(-2px);
     background: var(--agent-accent-2-hover);
-    box-shadow: 0 8px 24px rgba(43, 93, 102, 0.38);
+    box-shadow: 0 8px 24px rgba(36, 108, 240, 0.38);
 }
 
 .agent-btn-renew:active {
@@ -485,7 +485,7 @@ body.agent-panel .olivia-user-pill {
 }
 
 .agent-btn-renew:focus-visible {
-    outline: 2px solid rgba(43, 93, 102, 0.55);
+    outline: 2px solid rgba(36, 108, 240, 0.55);
     outline-offset: 2px;
 }
 
@@ -545,9 +545,9 @@ body.agent-panel .olivia-user-pill {
 
 .agent-btn-detail:hover {
     color: var(--agent-accent-2) !important;
-    border-color: rgba(43, 93, 102, 0.35);
+    border-color: rgba(36, 108, 240, 0.35);
     background: var(--agent-accent-2-soft);
-    box-shadow: 0 4px 12px rgba(43, 93, 102, 0.14);
+    box-shadow: 0 4px 12px rgba(36, 108, 240, 0.14);
     transform: translateY(-1px);
 }
 
@@ -725,8 +725,8 @@ body.agent-panel .olivia-user-pill {
     padding: 0.55rem 1.5rem;
     border: none;
     color: #fff;
-    background: linear-gradient(180deg, #3a7580 0%, var(--agent-accent-2) 100%);
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.3);
+    background: linear-gradient(180deg, #2976f9 0%, var(--agent-accent-2) 100%);
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.3);
 }
 
 .agent-renew-modal .btn-agent-confirm:hover {

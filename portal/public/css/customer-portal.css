@@ -2,21 +2,21 @@
  * مدد — بوابة المشترك (ويب + أساس تطبيق الجوال)
  */
 :root {
-    --cp-teal: #2b5d66;
-    --cp-teal-deep: #1a3f46;
-    --cp-teal-mid: #3a7580;
-    --cp-mist: #eaf3f4;
-    --cp-ink: #101517;
-    --cp-muted: #6b777a;
-    --cp-line: #dde6e7;
-    --cp-surface: #f4f7f7;
+    --cp-teal: #246cf0;
+    --cp-teal-deep: #0c3c9c;
+    --cp-teal-mid: #2976f9;
+    --cp-mist: #e8f1fe;
+    --cp-ink: #0b1220;
+    --cp-muted: #64748b;
+    --cp-line: #dbe7fb;
+    --cp-surface: #f4f8ff;
     --cp-white: #ffffff;
     --cp-ok: #1f7a4d;
     --cp-warn: #b45309;
     --cp-danger: #b42318;
     --cp-radius: 14px;
-    --cp-shadow: 0 1px 3px rgba(16, 21, 23, 0.06), 0 8px 24px rgba(16, 21, 23, 0.06);
-    --cp-font: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', system-ui, sans-serif;
+    --cp-shadow: 0 1px 3px rgba(12, 60, 156, 0.06), 0 8px 24px rgba(12, 60, 156, 0.08);
+    --cp-font: 'Neo Sans Arabic', 'Segoe UI', system-ui, sans-serif;
 }
 
 * { box-sizing: border-box; }

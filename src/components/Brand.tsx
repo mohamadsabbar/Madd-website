@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useSiteConfig } from '../context/SiteConfigContext'
 
-const DEFAULT_LOGO = '/madd-logo.png'
+const DEFAULT_LOGO = '/brand/madd-logo.png'
 
 export function Brand({ footer = false, to = '/' }: { footer?: boolean; to?: string }) {
   const { config } = useSiteConfig()
@@ -17,15 +17,11 @@ export function Brand({ footer = false, to = '/' }: { footer?: boolean; to?: str
       <img
         src={src}
         alt={`${nameAr} — ${nameEn}`}
-        width={footer ? 140 : 180}
-        height={footer ? 56 : 72}
+        width={footer ? 140 : 168}
+        height={footer ? 54 : 64}
         className="brand__full-logo"
         decoding="async"
       />
-      <span className="brand__text brand__text--beside-logo">
-        <span className="brand__ar">{nameAr}</span>
-        <span className="brand__en">{nameEn}</span>
-      </span>
     </Link>
   )
 }

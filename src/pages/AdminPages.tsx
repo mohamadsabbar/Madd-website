@@ -244,7 +244,7 @@ export function AdminBranding() {
           اللون الثانوي — أعمال (نحاسي)
           <input
             type="color"
-            value={brand.businessSecondaryColor || '#c4784a'}
+            value={brand.businessSecondaryColor || '#0a4bb8'}
             onChange={(e) =>
               updateConfig({ brand: { ...brand, businessSecondaryColor: e.target.value } })
             }
@@ -254,7 +254,7 @@ export function AdminBranding() {
           تمييز أعمال (سماوي)
           <input
             type="color"
-            value={brand.businessHighlightColor || '#3b8ea5'}
+            value={brand.businessHighlightColor || '#38bdf8'}
             onChange={(e) =>
               updateConfig({ brand: { ...brand, businessHighlightColor: e.target.value } })
             }

@@ -2,24 +2,24 @@
  * لوحة تحكم — أسلوب Glass / بطاقات ناعمة (مطابقة لهيكل لوحة التجارة)
  */
 :root {
-    --dg-font: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', system-ui, sans-serif;
-    /* مدد | MADD: تيل بترولي + أسود */
-    --dg-bg: #f4f7f7;
+    --dg-font: 'Neo Sans Arabic', 'Segoe UI', system-ui, sans-serif;
+    /* مدد | MADD NET: أزرق العلامة + أسود */
+    --dg-bg: #f4f8ff;
     --dg-surface: #ffffff;
-    --dg-text: #101517;
-    --dg-muted: #6b777a;
-    --dg-border: #dde6e7;
-    --dg-accent: #101517;
-    --dg-accent-2: #2b5d66;
-    --dg-accent-2-hover: #1a3f46;
-    --dg-accent-2-soft: rgba(43, 93, 102, 0.14);
-    --dg-gradient-nav: linear-gradient(135deg, #1a3f46 0%, #2b5d66 52%, #3a7580 100%);
-    --dg-shadow-accent: 0 8px 24px rgba(43, 93, 102, 0.28);
+    --dg-text: #0b1220;
+    --dg-muted: #64748b;
+    --dg-border: #dbe7fb;
+    --dg-accent: #0b1220;
+    --dg-accent-2: #246cf0;
+    --dg-accent-2-hover: #0c3c9c;
+    --dg-accent-2-soft: rgba(36, 108, 240, 0.14);
+    --dg-gradient-nav: linear-gradient(135deg, #0c3c9c 0%, #246cf0 52%, #2976f9 100%);
+    --dg-shadow-accent: 0 8px 24px rgba(36, 108, 240, 0.28);
     --dg-danger: #525252;
     --dg-radius: 16px;
     --dg-radius-sm: 12px;
-    --dg-shadow: 0 1px 3px rgba(16, 21, 23, 0.06), 0 4px 14px rgba(16, 21, 23, 0.05);
-    --dg-shadow-hover: 0 8px 28px rgba(16, 21, 23, 0.08);
+    --dg-shadow: 0 1px 3px rgba(12, 60, 156, 0.06), 0 4px 14px rgba(12, 60, 156, 0.05);
+    --dg-shadow-hover: 0 8px 28px rgba(12, 60, 156, 0.08);
 }
 
 body.dg-panel {
@@ -31,10 +31,10 @@ body.dg-panel {
     margin: 0;
     min-height: 100vh;
     /* Bootstrap 5 — أزرار primary داخل اللوحة */
-    --bs-primary: #2b5d66;
-    --bs-primary-rgb: 43, 93, 102;
-    --bs-link-color: #2b5d66;
-    --bs-link-hover-color: #1a3f46;
+    --bs-primary: #246cf0;
+    --bs-primary-rgb: 36, 108, 240;
+    --bs-link-color: #246cf0;
+    --bs-link-hover-color: #0c3c9c;
 }
 
 .dg-shell {
@@ -214,11 +214,11 @@ body.dg-sidebar-open .dg-sidebar-backdrop {
 .dg-nav-link:hover {
     background: var(--dg-accent-2-soft);
     color: var(--dg-text);
-    border-color: rgba(43, 93, 102, 0.22);
+    border-color: rgba(36, 108, 240, 0.22);
 }
 
 .dg-nav-link:hover .dg-nav-link__icon {
-    background: rgba(43, 93, 102, 0.18);
+    background: rgba(36, 108, 240, 0.18);
     color: var(--dg-accent-2);
 }
 
@@ -320,7 +320,7 @@ body.dg-sidebar-open .dg-sidebar-backdrop {
 .dg-search:focus {
     outline: none;
     border-color: var(--dg-accent-2);
-    box-shadow: 0 0 0 3px rgba(43, 93, 102, 0.22);
+    box-shadow: 0 0 0 3px rgba(36, 108, 240, 0.22);
 }
 
 .dg-search-icon {
@@ -631,13 +631,13 @@ body.dg-sidebar-open .dg-sidebar-backdrop {
 }
 
 a.dg-status-card:hover {
-    border-color: rgba(43, 93, 102, 0.35);
-    box-shadow: var(--dg-shadow), 0 0 0 2px rgba(43, 93, 102, 0.12);
+    border-color: rgba(36, 108, 240, 0.35);
+    box-shadow: var(--dg-shadow), 0 0 0 2px rgba(36, 108, 240, 0.12);
 }
 
 .dg-status-card.ring-active {
     border-color: var(--dg-accent-2);
-    box-shadow: var(--dg-shadow), 0 0 0 2px rgba(43, 93, 102, 0.2);
+    box-shadow: var(--dg-shadow), 0 0 0 2px rgba(36, 108, 240, 0.2);
 }
 
 .dg-filter-pills .dg-btn {
@@ -799,8 +799,8 @@ a.dg-status-card:hover {
 .dg-badge--ppp-offline {
     background: linear-gradient(135deg, var(--dg-accent-2-soft) 0%, rgba(0, 102, 255, 0.12) 100%);
     color: #1e3a8a;
-    border: 1px solid rgba(43, 93, 102, 0.35);
-    box-shadow: 0 1px 2px rgba(43, 93, 102, 0.12);
+    border: 1px solid rgba(36, 108, 240, 0.35);
+    box-shadow: 0 1px 2px rgba(36, 108, 240, 0.12);
 }
 
 .dg-pagination {
@@ -849,21 +849,21 @@ a.dg-status-card:hover {
     border-radius: 12px;
     border: 2px solid var(--dg-accent-2);
     background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%);
-    color: #1a3f46;
+    color: #0c3c9c;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(43, 93, 102, 0.18);
+    box-shadow: 0 2px 8px rgba(36, 108, 240, 0.18);
     transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .dg-logout-btn:hover {
     background: #eef2ff;
-    border-color: #1a3f46;
+    border-color: #0c3c9c;
     color: #1e3a8a;
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.24);
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.24);
 }
 
 .dg-logout-btn:focus-visible {
-    outline: 3px solid rgba(43, 93, 102, 0.35);
+    outline: 3px solid rgba(36, 108, 240, 0.35);
     outline-offset: 2px;
 }
 

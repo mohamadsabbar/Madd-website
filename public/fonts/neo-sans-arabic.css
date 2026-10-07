@@ -1,0 +1,40 @@
+/* Neo Sans Arabic — MADD NET brand typeface */
+@font-face {
+  font-family: 'Neo Sans Arabic';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/neo-sans-arabic-regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Neo Sans Arabic';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/neo-sans-arabic-medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Neo Sans Arabic';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/neo-sans-arabic-medium.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Neo Sans Arabic';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/neo-sans-arabic-bold.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Neo Sans Arabic';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/neo-sans-arabic-bold.ttf') format('truetype');
+}

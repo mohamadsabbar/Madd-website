@@ -3,16 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#2b5d66">
+    <meta name="theme-color" content="#246cf0">
     <meta name="description" content="{{ \Illuminate\Support\Str::limit(strip_tags((string) config('landing.lead')), 160) }}">
     <title>{{ config('landing.company_name') }}</title>
     <link rel="preconnect" href="https://db.onlinewebfonts.com" crossorigin>
-    <link rel="stylesheet" href="{{ asset('css/din-next-lt-arabic.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('fonts/neo-sans-arabic.css') }}?v=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
-        :root { --ol-accent: #2b5d66; }
-        body { font-family: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(165deg, #0c171a 0%, #1a3f46 45%, #2b5d66 100%); min-height: 100vh; color: #eaf3f4; }
+        :root { --ol-accent: #246cf0; }
+        body { font-family: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', Tahoma, sans-serif; background: linear-gradient(165deg, #0c171a 0%, #1a3f46 45%, #246cf0 100%); min-height: 100vh; color: #eaf3f4; }
         .ol-wrap { padding: clamp(2rem, 5vw, 3.5rem) 0; }
         .ol-accent { color: #9fd0d8; }
         .ol-brand img { max-height: 96px; width: auto; background: #fff; border-radius: 12px; padding: 0.65rem 1rem; }

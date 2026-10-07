@@ -40,3 +40,6 @@ api/config.local.php
 *.njsproj
 *.sln
 *.sw?
+
+.venv-brand/
+.brand-extract/

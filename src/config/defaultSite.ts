@@ -288,19 +288,19 @@ const page = (
 
 export const DEFAULT_SITE: SiteConfig = {
   seo: {
-    title: 'مدد للاتصالات | إنترنت واي فايبر وحلول رقمية',
+    title: 'مدد | MADD NET — إنترنت واي فايبر وحلول رقمية',
     description:
-      'مدد للاتصالات — إنترنت واي فايبر منزلي وتجاري، أنظمة نقاط بيع وإدارة موظفين، وبرمجة مواقع وتطبيقات بفريق دعم محلي.',
+      'مدد (MADD NET) — إنترنت واي فايبر منزلي وتجاري، أنظمة نقاط بيع وإدارة موظفين، وبرمجة مواقع وتطبيقات بفريق دعم محلي.',
   },
   brand: {
     nameAr: 'مدد',
-    nameEn: 'مدد للاتصالات',
+    nameEn: 'MADD NET',
     logoDataUrl: null,
     faviconDataUrl: null,
-    primaryColor: '#2b5d66',
-    secondaryColor: '#ed875e',
-    businessSecondaryColor: '#c4784a',
-    businessHighlightColor: '#3b8ea5',
+    primaryColor: '#246cf0',
+    secondaryColor: '#00a8d8',
+    businessSecondaryColor: '#0a4bb8',
+    businessHighlightColor: '#38bdf8',
     tagline: 'اتصال موثوق… وحلول تكمّل عملك.',
     ctaIndividuals: 'حسابي',
     ctaBusiness: 'بوابة الأعمال',
@@ -961,7 +961,7 @@ export const DEFAULT_SITE: SiteConfig = {
   },
 }
 
-export const STORAGE_KEY = 'madd-site-config-v5'
+export const STORAGE_KEY = 'madd-site-config-v6'
 export const AUTH_KEY = 'madd-admin-auth'
 export const ADMIN_PASSWORD_SESSION = 'madd-admin-password'
 
@@ -1091,14 +1091,29 @@ export function normalizeSiteConfig(raw: Partial<SiteConfig> | null | undefined)
     merged.digital.posAppUrl = DEFAULT_SITE.digital.posAppUrl
   }
   merged.brand = { ...merged.brand }
-  if (merged.brand.secondaryColor === '#3a7580') {
+  // Migrate legacy teal / coral palette → MADD NET blue identity
+  const legacyPrimaries = new Set(['#2b5d66', '#1a3f46', '#3a7580'])
+  const legacySecondaries = new Set(['#ed875e', '#e07a52', '#3a7580', '#c4784a'])
+  if (legacyPrimaries.has(String(merged.brand.primaryColor || '').toLowerCase())) {
+    merged.brand.primaryColor = DEFAULT_SITE.brand.primaryColor
+  }
+  if (legacySecondaries.has(String(merged.brand.secondaryColor || '').toLowerCase())) {
     merged.brand.secondaryColor = DEFAULT_SITE.brand.secondaryColor
   }
-  if (!merged.brand.businessSecondaryColor) {
+  if (
+    !merged.brand.businessSecondaryColor ||
+    legacySecondaries.has(String(merged.brand.businessSecondaryColor).toLowerCase())
+  ) {
     merged.brand.businessSecondaryColor = DEFAULT_SITE.brand.businessSecondaryColor
   }
-  if (!merged.brand.businessHighlightColor) {
+  if (
+    !merged.brand.businessHighlightColor ||
+    ['#3b8ea5'].includes(String(merged.brand.businessHighlightColor).toLowerCase())
+  ) {
     merged.brand.businessHighlightColor = DEFAULT_SITE.brand.businessHighlightColor
+  }
+  if (!merged.brand.nameEn || merged.brand.nameEn === 'مدد للاتصالات') {
+    merged.brand.nameEn = DEFAULT_SITE.brand.nameEn
   }
   const benefits = merged.home.benefits || []
   const legacyBenefits =

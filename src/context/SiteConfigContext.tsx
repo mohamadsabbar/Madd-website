@@ -60,11 +60,11 @@ function applyDocumentMeta(config: SiteConfig) {
 
   const favicon = document.querySelector('link[rel="icon"]') as HTMLLinkElement | null
   if (favicon) {
-    favicon.href = config.brand.faviconDataUrl || config.brand.logoDataUrl || '/madd-logo.png'
+    favicon.href = config.brand.faviconDataUrl || config.brand.logoDataUrl || '/brand/madd-mark.png'
   }
 }
 
-/** Switch accent palette: coral for individuals/offers, copper + sky for business. */
+/** Switch accent palette: cyan for individuals, deeper blue + sky for business (MADD NET). */
 export function applyAudienceColors(
   config: SiteConfig,
   audience: 'individuals' | 'business',
@@ -72,11 +72,11 @@ export function applyAudienceColors(
   const primary = config.brand.primaryColor
   const secondary =
     audience === 'business'
-      ? config.brand.businessSecondaryColor || '#c4784a'
-      : config.brand.secondaryColor || '#ed875e'
+      ? config.brand.businessSecondaryColor || '#0a4bb8'
+      : config.brand.secondaryColor || '#00a8d8'
   const mid =
     audience === 'business'
-      ? config.brand.businessHighlightColor || '#3b8ea5'
+      ? config.brand.businessHighlightColor || '#38bdf8'
       : shade(primary, 12)
 
   document.documentElement.dataset.audience = audience
@@ -86,7 +86,7 @@ export function applyAudienceColors(
   document.documentElement.style.setProperty('--accent-soft', shade(secondary, 88))
   document.documentElement.style.setProperty(
     '--accent-strong',
-    audience === 'business' ? shade(secondary, -10) : '#e07a52',
+    audience === 'business' ? shade(secondary, -10) : '#0284c7',
   )
 }
 

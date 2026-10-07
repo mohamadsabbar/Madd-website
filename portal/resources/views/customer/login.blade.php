@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#2b5d66">
+    <meta name="theme-color" content="#246cf0">
     <title>تسجيل الدخول | مدد — حساب المشترك</title>
-    <link rel="stylesheet" href="{{ asset('css/din-next-lt-arabic.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('fonts/neo-sans-arabic.css') }}?v=1">
     <link rel="stylesheet" href="{{ asset('css/customer-portal.css') }}?v=1">
 </head>
 <body class="cp-body">

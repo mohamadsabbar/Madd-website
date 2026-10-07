@@ -1,26 +1,26 @@
 /**
- * مدد | MADD — لوحة التحكم
- * هوية بصرية: تيل بترولي + أسود + أبيض
+ * مدد | MADD NET — لوحة التحكم
+ * هوية بصرية: أزرق العلامة + أسود + أبيض
  */
 :root {
-    --olivia-font: 'DIN Next LT Arabic', 'Cairo', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    --olivia-navy: #101517;
-    --olivia-navy-soft: #1a3f46;
-    --olivia-slate: #3a4548;
-    --olivia-muted: #6b777a;
-    --olivia-border: #dde6e7;
-    --olivia-bg: #f4f7f7;
+    --olivia-font: 'Neo Sans Arabic', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --olivia-navy: #0b1220;
+    --olivia-navy-soft: #0c3c9c;
+    --olivia-slate: #334155;
+    --olivia-muted: #64748b;
+    --olivia-border: #dbe7fb;
+    --olivia-bg: #f4f8ff;
     --olivia-surface: #ffffff;
-    --olivia-accent: #101517;
-    --olivia-accent-2: #2b5d66;
-    --olivia-accent-2-hover: #1a3f46;
-    --olivia-accent-soft: rgba(43, 93, 102, 0.12);
-    --olivia-gradient-cta: linear-gradient(180deg, #3a7580 0%, #2b5d66 45%, #1a3f46 100%);
-    --olivia-gradient: linear-gradient(125deg, #1a3f46 0%, #2b5d66 100%);
-    --olivia-gradient-soft: #eaf3f4;
+    --olivia-accent: #0b1220;
+    --olivia-accent-2: #246cf0;
+    --olivia-accent-2-hover: #0c3c9c;
+    --olivia-accent-soft: rgba(36, 108, 240, 0.12);
+    --olivia-gradient-cta: linear-gradient(180deg, #2976f9 0%, #246cf0 45%, #0c3c9c 100%);
+    --olivia-gradient: linear-gradient(125deg, #0c3c9c 0%, #246cf0 100%);
+    --olivia-gradient-soft: #e8f1fe;
     --olivia-radius: 12px;
-    --olivia-shadow: 0 1px 3px rgba(16, 21, 23, 0.06), 0 4px 14px rgba(16, 21, 23, 0.05);
-    --olivia-shadow-lg: 0 4px 24px rgba(16, 21, 23, 0.08);
+    --olivia-shadow: 0 1px 3px rgba(12, 60, 156, 0.06), 0 4px 14px rgba(12, 60, 156, 0.05);
+    --olivia-shadow-lg: 0 4px 24px rgba(12, 60, 156, 0.08);
     --olivia-glow-accent: var(--olivia-shadow-lg);
     --olivia-glow-soft: var(--olivia-shadow);
 }
@@ -35,10 +35,10 @@ body.olivia-panel {
     font-weight: 500;
     -webkit-font-smoothing: antialiased;
     letter-spacing: 0.01em;
-    --bs-primary: #2b5d66;
-    --bs-primary-rgb: 43, 93, 102;
-    --bs-link-color: #2b5d66;
-    --bs-link-hover-color: #1a3f46;
+    --bs-primary: #246cf0;
+    --bs-primary-rgb: 36, 108, 240;
+    --bs-link-color: #246cf0;
+    --bs-link-hover-color: #0c3c9c;
 }
 
 /* هيكل التطبيق */
@@ -76,7 +76,7 @@ body.olivia-panel {
     top: 0;
     width: 3px;
     height: 100%;
-    background: linear-gradient(180deg, #1a3f46 0%, #2b5d66 55%, #3a7580 100%);
+    background: linear-gradient(180deg, #0c3c9c 0%, #246cf0 55%, #2976f9 100%);
     border-radius: 3px 0 0 3px;
 }
 
@@ -159,7 +159,7 @@ body.olivia-panel {
 .olivia-sidebar-nav .nav-link:hover {
     background: var(--olivia-accent-soft);
     color: var(--olivia-navy);
-    border-color: rgba(43, 93, 102, 0.22);
+    border-color: rgba(36, 108, 240, 0.22);
     transform: translateX(-2px);
 }
 
@@ -173,10 +173,10 @@ body.olivia-panel {
 }
 
 .olivia-sidebar-nav .nav-link.active {
-    background: linear-gradient(135deg, #1a3f46 0%, #2b5d66 50%, #3a7580 100%);
+    background: linear-gradient(135deg, #0c3c9c 0%, #246cf0 50%, #2976f9 100%);
     color: #fff !important;
     border-color: transparent;
-    box-shadow: 0 8px 24px rgba(43, 93, 102, 0.28);
+    box-shadow: 0 8px 24px rgba(36, 108, 240, 0.28);
 }
 
 .olivia-sidebar-nav .nav-link.active i {
@@ -256,23 +256,23 @@ button.btn.olivia-btn-logout {
     padding: 0.55rem 1.2rem;
     border-radius: 12px;
     border: 2px solid var(--olivia-accent-2) !important;
-    color: #1a3f46 !important;
+    color: #0c3c9c !important;
     background: linear-gradient(180deg, #ffffff 0%, #f0f4ff 100%) !important;
-    box-shadow: 0 2px 8px rgba(43, 93, 102, 0.18);
+    box-shadow: 0 2px 8px rgba(36, 108, 240, 0.18);
     transition: border-color 0.15s, background 0.15s, color 0.15s, box-shadow 0.15s, transform 0.12s;
 }
 
 .olivia-btn-logout:hover,
 button.btn.olivia-btn-logout:hover {
     background: #eef2ff !important;
-    border-color: #1a3f46 !important;
+    border-color: #0c3c9c !important;
     color: #1e3a8a !important;
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.24);
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.24);
 }
 
 .olivia-btn-logout:focus-visible,
 button.btn.olivia-btn-logout:focus-visible {
-    outline: 3px solid rgba(43, 93, 102, 0.35);
+    outline: 3px solid rgba(36, 108, 240, 0.35);
     outline-offset: 2px;
 }
 
@@ -395,9 +395,9 @@ body.auth-login {
     inset: 0;
     z-index: 0;
     background:
-        radial-gradient(ellipse 120% 80% at 100% 0%, rgba(43, 93, 102, 0.16) 0%, transparent 52%),
+        radial-gradient(ellipse 120% 80% at 100% 0%, rgba(36, 108, 240, 0.16) 0%, transparent 52%),
         radial-gradient(ellipse 90% 70% at 0% 100%, rgba(26, 63, 70, 0.1) 0%, transparent 48%),
-        linear-gradient(165deg, #f4f7f7 0%, #eaf3f4 45%, #e2ecee 100%);
+        linear-gradient(165deg, #f4f7f7 0%, #e8f1fe 45%, #e2ecee 100%);
 }
 
 .auth-login-bg::after {
@@ -440,7 +440,7 @@ body.auth-login {
 .auth-login-card__brand {
     padding: 1.75rem 1.5rem 1rem;
     text-align: center;
-    background: linear-gradient(180deg, rgba(43, 93, 102, 0.06) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(36, 108, 240, 0.06) 0%, transparent 100%);
 }
 
 .auth-login-card__logo {
@@ -552,7 +552,7 @@ body.auth-login {
     outline: none;
     background: #fff;
     border-color: var(--olivia-accent-2);
-    box-shadow: 0 0 0 3px rgba(43, 93, 102, 0.22);
+    box-shadow: 0 0 0 3px rgba(36, 108, 240, 0.22);
 }
 
 .auth-login-input-icon {
@@ -579,11 +579,11 @@ body.auth-login {
     font-weight: 800;
     letter-spacing: 0.02em;
     color: #fff;
-    background: linear-gradient(180deg, #3a7580 0%, var(--olivia-accent-2) 45%, #1a3f46 100%);
+    background: linear-gradient(180deg, #2976f9 0%, var(--olivia-accent-2) 45%, #0c3c9c 100%);
     border: none;
     border-radius: 13px;
     cursor: pointer;
-    box-shadow: 0 4px 14px rgba(43, 93, 102, 0.38), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    box-shadow: 0 4px 14px rgba(36, 108, 240, 0.38), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
     transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
@@ -591,7 +591,7 @@ body.auth-login {
     color: #fff;
     filter: brightness(1.03);
     transform: translateY(-1px);
-    box-shadow: 0 8px 22px rgba(43, 93, 102, 0.42), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
+    box-shadow: 0 8px 22px rgba(36, 108, 240, 0.42), 0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
 .auth-login-submit:active {
