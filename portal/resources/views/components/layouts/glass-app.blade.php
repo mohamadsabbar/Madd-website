@@ -51,6 +51,18 @@
                 <span class="dg-nav-link__icon"><i class="bi bi-send-fill"></i></span>
                 <span class="dg-nav-link__text">إرسال رسائل SMS</span>
             </a>
+            @if (Route::has('web.admin.tickets'))
+            <a href="{{ route('web.admin.tickets') }}" class="dg-nav-link {{ request()->routeIs('web.admin.tickets', 'web.admin.tickets.show') ? 'active' : '' }}">
+                <span class="dg-nav-link__icon"><i class="bi bi-life-preserver"></i></span>
+                <span class="dg-nav-link__text">تذاكر الدعم</span>
+            </a>
+            @endif
+            @if (Route::has('web.admin.renewals'))
+            <a href="{{ route('web.admin.renewals') }}" class="dg-nav-link {{ request()->routeIs('web.admin.renewals', 'web.admin.renewals.update') ? 'active' : '' }}">
+                <span class="dg-nav-link__icon"><i class="bi bi-arrow-repeat"></i></span>
+                <span class="dg-nav-link__text">طلبات التجديد</span>
+            </a>
+            @endif
             <a href="{{ route('web.admin.subscribers') }}" class="dg-nav-link {{ request()->routeIs('web.admin.subscribers', 'web.admin.subscribers.*') ? 'active' : '' }}">
                 <span class="dg-nav-link__icon"><i class="bi bi-people-fill"></i></span>
                 <span class="dg-nav-link__text">المشتركين</span>

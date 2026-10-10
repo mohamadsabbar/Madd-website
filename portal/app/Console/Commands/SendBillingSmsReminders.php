@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\BillingSmsService;
+use App\Services\FcmPushService;
 use App\Support\BillingCalendar;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
@@ -13,9 +14,9 @@ class SendBillingSmsReminders extends Command
 {
     protected $signature = 'billing:send-reminders';
 
-    protected $description = 'إرسال تذكيرات SMS قبل يوم الفوترة لمن لديهم مستحقات غير مدفوعة';
+    protected $description = 'إرسال تذكيرات SMS وPush قبل يوم الفوترة لمن لديهم مستحقات غير مدفوعة';
 
-    public function handle(BillingSmsService $sms): int
+    public function handle(BillingSmsService $sms, FcmPushService $fcm): int
     {
         $billingDay = (int) config('billing.billing_day', 5);
         $today = now()->startOfDay();
@@ -28,8 +29,11 @@ class SendBillingSmsReminders extends Command
             return self::SUCCESS;
         }
 
-        if (! $sms->isLive()) {
-            $this->warn('SMS غير مفعّل أو ناقص الإعدادات — تخطّي التذكيرات. راجع BILLING_SMS_* في .env');
+        $smsLive = $sms->isLive();
+        $fcmLive = $fcm->isConfigured();
+
+        if (! $smsLive && ! $fcmLive) {
+            $this->warn('SMS وFCM غير مفعّلين — تخطّي التذكيرات.');
 
             return self::SUCCESS;
         }
@@ -41,13 +45,13 @@ class SendBillingSmsReminders extends Command
         $company = (string) config('billing.company_name', '');
 
         $subscribers = Subscriber::query()
-            ->whereNotNull('phone')
-            ->where('phone', '!=', '')
+            ->with('user')
             ->whereHas('invoices', fn ($q) => $q->where('status', 'unpaid'))
             ->withSum(['invoices' => fn ($q) => $q->where('status', 'unpaid')], 'amount')
             ->get();
 
-        $sent = 0;
+        $sentSms = 0;
+        $sentPush = 0;
         $failed = 0;
         $failures = [];
         foreach ($subscribers as $subscriber) {
@@ -67,31 +71,56 @@ class SendBillingSmsReminders extends Command
                 $template
             );
 
-            if ($sms->send($subscriber->phone, $message)) {
+            $anyOk = false;
+
+            if ($smsLive && $subscriber->phone) {
+                if ($sms->send($subscriber->phone, $message)) {
+                    $sentSms++;
+                    $anyOk = true;
+                } else {
+                    $failed++;
+                    $failures[] = [
+                        'subscriber_id' => $subscriber->id,
+                        'channel' => 'sms',
+                        'error' => $sms->getLastError(),
+                    ];
+                }
+            }
+
+            if ($fcmLive && $subscriber->user) {
+                $n = $fcm->sendToUser(
+                    $subscriber->user,
+                    'تذكير فاتورة',
+                    $message,
+                    [
+                        'type' => 'invoice_reminder',
+                        'amount' => (string) $amount,
+                        'due_date' => $due->toDateString(),
+                    ]
+                );
+                if ($n > 0) {
+                    $sentPush += $n;
+                    $anyOk = true;
+                }
+            }
+
+            if ($anyOk) {
                 Cache::put($cacheKey, true, now()->addDays(2));
-                $sent++;
-            } else {
-                $failed++;
-                $failures[] = [
-                    'subscriber_id' => $subscriber->id,
-                    'name' => $subscriber->full_name,
-                    'phone' => $subscriber->phone,
-                    'error' => $sms->getLastError(),
-                ];
             }
         }
 
         ActivityLogger::log(
             'sms.reminder_batch',
-            "تذكيرات الفوترة (قبل {$daysUntil} يوم): نجح {$sent}، فشل {$failed}.",
+            "تذكيرات الفوترة (قبل {$daysUntil} يوم): SMS {$sentSms}، Push {$sentPush}، فشل {$failed}.",
             [
                 'severity' => $failed === 0
                     ? \App\Models\ActivityLog::SEVERITY_SUCCESS
-                    : ($sent === 0 ? \App\Models\ActivityLog::SEVERITY_ERROR : \App\Models\ActivityLog::SEVERITY_WARNING),
+                    : ($sentSms === 0 && $sentPush === 0 ? \App\Models\ActivityLog::SEVERITY_ERROR : \App\Models\ActivityLog::SEVERITY_WARNING),
                 'meta' => [
                     'days_until_billing' => $daysUntil,
                     'due_date' => $due->toDateString(),
-                    'success' => $sent,
+                    'sms_success' => $sentSms,
+                    'push_success' => $sentPush,
                     'fail' => $failed,
                     'total_with_unpaid' => $subscribers->count(),
                     'failures' => array_slice($failures, 0, 50),
@@ -99,7 +128,7 @@ class SendBillingSmsReminders extends Command
             ]
         );
 
-        $this->info("تمت محاولة إرسال {$sent} تذكيراً (من أصل {$subscribers->count()} مشتركاً بمستحقات).");
+        $this->info("تذكيرات الفوترة: SMS={$sentSms} Push={$sentPush}.");
 
         return self::SUCCESS;
     }

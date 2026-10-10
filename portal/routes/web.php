@@ -4,7 +4,9 @@ use App\Http\Controllers\Web\AdminActivityController;
 use App\Http\Controllers\Web\AdminAnalyticsController;
 use App\Http\Controllers\Web\AdminDashboardController;
 use App\Http\Controllers\Web\AdminRouterController;
+use App\Http\Controllers\Web\AdminRenewalRequestController;
 use App\Http\Controllers\Web\AdminSmsController;
+use App\Http\Controllers\Web\AdminTicketController;
 use App\Http\Controllers\Web\AdminSubscriberController;
 use App\Http\Controllers\Web\AgentDashboardController;
 use App\Http\Controllers\Web\AuthWebController;
@@ -72,6 +74,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/admin/activity', [AdminActivityController::class, 'index'])->name('web.admin.activity');
         Route::get('/admin/sms', [AdminSmsController::class, 'index'])->name('web.admin.sms');
         Route::post('/admin/sms/send', [AdminSmsController::class, 'send'])->name('web.admin.sms.send');
+
+        Route::get('/admin/tickets', [AdminTicketController::class, 'index'])->name('web.admin.tickets');
+        Route::get('/admin/tickets/{ticket}', [AdminTicketController::class, 'show'])->name('web.admin.tickets.show');
+        Route::post('/admin/tickets/{ticket}/reply', [AdminTicketController::class, 'reply'])->name('web.admin.tickets.reply');
+        Route::post('/admin/tickets/{ticket}/close', [AdminTicketController::class, 'close'])->name('web.admin.tickets.close');
+        Route::post('/admin/tickets/{ticket}/reopen', [AdminTicketController::class, 'reopen'])->name('web.admin.tickets.reopen');
+
+        Route::get('/admin/renewals', [AdminRenewalRequestController::class, 'index'])->name('web.admin.renewals');
+        Route::patch('/admin/renewals/{renewalRequest}', [AdminRenewalRequestController::class, 'update'])->name('web.admin.renewals.update');
         Route::get('/admin/plans', [AdminDashboardController::class, 'plans'])->name('web.admin.plans');
         Route::put('/admin/plans/{plan}', [AdminDashboardController::class, 'updatePlan'])->name('web.admin.plans.update');
         Route::delete('/admin/plans/{plan}', [AdminDashboardController::class, 'destroyPlan'])->name('web.admin.plans.destroy');

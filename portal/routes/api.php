@@ -8,7 +8,9 @@ use App\Http\Controllers\Api\AdminPlanController;
 use App\Http\Controllers\Api\AdminSubscriberController;
 use App\Http\Controllers\Api\AgentController;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CustomerAccountController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\CustomerTicketController;
 use App\Http\Controllers\Api\SiteCmsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +24,8 @@ Route::get('/', function () {
 });
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/customer/forgot-password', [CustomerAccountController::class, 'forgotPassword']);
+Route::post('/customer/reset-password', [CustomerAccountController::class, 'resetPassword']);
 
 /** محتوى الموقع التسويقي + الطلبات */
 Route::prefix('site')->group(function () {
@@ -90,5 +94,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/plans', [CustomerController::class, 'plans']);
         Route::post('/renewal-request', [CustomerController::class, 'requestRenewal']);
         Route::post('/self-extend', [CustomerController::class, 'selfExtend']);
+
+        Route::post('/change-password', [CustomerAccountController::class, 'changePassword']);
+        Route::post('/device-token', [CustomerAccountController::class, 'storeDeviceToken']);
+        Route::delete('/device-token', [CustomerAccountController::class, 'destroyDeviceToken']);
+
+        Route::get('/tickets', [CustomerTicketController::class, 'index']);
+        Route::post('/tickets', [CustomerTicketController::class, 'store']);
+        Route::get('/tickets/{ticket}', [CustomerTicketController::class, 'show']);
+        Route::post('/tickets/{ticket}/messages', [CustomerTicketController::class, 'reply']);
     });
 });

@@ -59,7 +59,8 @@ php artisan serve --host=127.0.0.1 --port=8000
 
 - ويب: http://127.0.0.1:8000/my/login  
 - بعد الدخول: حسابي، الفواتير، الاستهلاك، الباقات، طلب تمديد  
-- API (Sanctum) لتطبيق الجوال لاحقاً:
+- **تطبيق الجوال (Flutter):** مجلد [`customer_app/`](customer_app/) — انظر `customer_app/README.md`
+- API (Sanctum) على `my.madd.ps`:
 
 | Method | Path |
 |--------|------|
@@ -70,6 +71,10 @@ php artisan serve --host=127.0.0.1 --port=8000
 | GET | `/api/customer/plans` |
 | POST | `/api/customer/renewal-request` — تمديد ذاتي إن أمكن، أو طلب شركة |
 | POST | `/api/customer/self-extend` — تمديد ذاتي صريح |
+| POST | `/api/customer/change-password` |
+| POST | `/api/customer/forgot-password` / `reset-password` |
+| GET/POST | `/api/customer/tickets` … |
+| POST/DELETE | `/api/customer/device-token` |
 
 **تمديد ذاتي (بدون موافقة):** يظهر فقط بعد انتهاء الاشتراك — أول مرة **3 أيام**، ثاني مرة **يومين**. بعدها يلزم التجديد عبر الشركة/الوكيل. يُصفَّر العداد عند تجديد الإدارة أو الوكيل.
 

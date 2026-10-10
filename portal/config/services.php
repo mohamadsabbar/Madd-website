@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'fcm' => [
+        /** Legacy FCM server key (Firebase Cloud Messaging) */
+        'server_key' => env('FCM_SERVER_KEY'),
+    ],
+
 ];

@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\BillingSmsService;
+use App\Services\FcmPushService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
@@ -12,9 +13,9 @@ class SendSubscriptionExpirySmsReminders extends Command
 {
     protected $signature = 'billing:send-expiry-reminders';
 
-    protected $description = 'إرسال تذكيرات SMS للمشتركين قبل انتهاء اشتراكهم بناءً على end_date';
+    protected $description = 'إرسال تذكيرات SMS وPush للمشتركين قبل انتهاء اشتراكهم بناءً على end_date';
 
-    public function handle(BillingSmsService $sms): int
+    public function handle(BillingSmsService $sms, FcmPushService $fcm): int
     {
         $today = now()->startOfDay();
         $reminderDays = array_values(array_unique(array_map(
@@ -22,8 +23,11 @@ class SendSubscriptionExpirySmsReminders extends Command
             (array) config('billing.expiry_reminder_days_before', [1])
         )));
 
-        if (! $sms->isLive()) {
-            $this->warn('SMS غير مفعّل أو ناقص الإعدادات — تخطّي تذكيرات انتهاء الاشتراك.');
+        $smsLive = $sms->isLive();
+        $fcmLive = $fcm->isConfigured();
+
+        if (! $smsLive && ! $fcmLive) {
+            $this->warn('SMS وFCM غير مفعّلين — تخطّي تذكيرات انتهاء الاشتراك.');
 
             return self::SUCCESS;
         }
@@ -32,13 +36,13 @@ class SendSubscriptionExpirySmsReminders extends Command
         $company = (string) config('billing.company_name', '');
 
         $allCandidates = Subscriber::query()
+            ->with('user')
             ->where('status', 'active')
             ->whereNotNull('end_date')
-            ->whereNotNull('phone')
-            ->where('phone', '!=', '')
             ->get();
 
-        $sent = 0;
+        $sentSms = 0;
+        $sentPush = 0;
         $failed = 0;
         $eligible = 0;
         $failures = [];
@@ -67,32 +71,56 @@ class SendSubscriptionExpirySmsReminders extends Command
                 $template !== '' ? $template : 'تذكير ينتهي اشتراكك بعد {days} يوم بتاريخ {end_date}.'
             );
 
-            if ($sms->send((string) $subscriber->phone, $message)) {
+            $title = 'تذكير انتهاء الاشتراك';
+            $anyOk = false;
+
+            if ($smsLive && $subscriber->phone) {
+                if ($sms->send((string) $subscriber->phone, $message)) {
+                    $sentSms++;
+                    $anyOk = true;
+                } else {
+                    $failed++;
+                    $failures[] = [
+                        'subscriber_id' => $subscriber->id,
+                        'channel' => 'sms',
+                        'error' => $sms->getLastError(),
+                    ];
+                }
+            }
+
+            if ($fcmLive && $subscriber->user) {
+                $n = $fcm->sendToUser(
+                    $subscriber->user,
+                    $title,
+                    $message,
+                    [
+                        'type' => 'expiry',
+                        'days' => (string) $daysUntilExpiry,
+                        'end_date' => (string) $subscriber->end_date->toDateString(),
+                    ]
+                );
+                if ($n > 0) {
+                    $sentPush += $n;
+                    $anyOk = true;
+                }
+            }
+
+            if ($anyOk) {
                 Cache::put($cacheKey, true, now()->addDays(2));
-                $sent++;
-            } else {
-                $failed++;
-                $failures[] = [
-                    'subscriber_id' => $subscriber->id,
-                    'name' => $subscriber->full_name,
-                    'phone' => $subscriber->phone,
-                    'days_until_expiry' => $daysUntilExpiry,
-                    'end_date' => optional($subscriber->end_date)->toDateString(),
-                    'error' => $sms->getLastError(),
-                ];
             }
         }
 
         ActivityLogger::log(
             'sms.expiry_reminder_batch',
-            "تذكيرات انتهاء الاشتراك: نجح {$sent}، فشل {$failed}.",
+            "تذكيرات انتهاء الاشتراك: SMS {$sentSms}، Push {$sentPush}، فشل {$failed}.",
             [
                 'severity' => $failed === 0
                     ? \App\Models\ActivityLog::SEVERITY_SUCCESS
-                    : ($sent === 0 ? \App\Models\ActivityLog::SEVERITY_ERROR : \App\Models\ActivityLog::SEVERITY_WARNING),
+                    : ($sentSms === 0 && $sentPush === 0 ? \App\Models\ActivityLog::SEVERITY_ERROR : \App\Models\ActivityLog::SEVERITY_WARNING),
                 'meta' => [
                     'days_before' => $reminderDays,
-                    'success' => $sent,
+                    'sms_success' => $sentSms,
+                    'push_success' => $sentPush,
                     'fail' => $failed,
                     'eligible_today' => $eligible,
                     'candidate_count' => $allCandidates->count(),
@@ -101,7 +129,7 @@ class SendSubscriptionExpirySmsReminders extends Command
             ]
         );
 
-        $this->info("تمت محاولة إرسال {$sent} تذكير انتهاء (من أصل {$eligible} مشتركاً مستحقاً اليوم).");
+        $this->info("تذكيرات انتهاء: SMS={$sentSms} Push={$sentPush} (مستحقون اليوم: {$eligible}).");
 
         return self::SUCCESS;
     }
