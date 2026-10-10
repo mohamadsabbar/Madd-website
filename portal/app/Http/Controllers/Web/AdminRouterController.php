@@ -38,7 +38,16 @@ class AdminRouterController extends Controller
 
         $data['is_active'] = $request->boolean('is_active', true);
 
-        Router::create($data);
+        try {
+            Router::create($data);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return redirect()
+                ->route('web.admin.routers')
+                ->withInput()
+                ->with('error', 'تعذّر حفظ الراوتر: '.$e->getMessage());
+        }
 
         return redirect()->route('web.admin.routers')->with('status', 'تمت إضافة الراوتر.');
     }
