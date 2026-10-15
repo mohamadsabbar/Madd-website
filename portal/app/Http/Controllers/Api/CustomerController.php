@@ -88,7 +88,7 @@ class CustomerController extends Controller
             }
 
             return response()->json([
-                'message' => "تم تمديد اشتراكك تلقائياً لمدة {$result['days']} أيام حتى {$result['new_end_date']}.",
+                'message' => "تم تفعيل فترة سماح مجانية لمدة {$result['days']} أيام حتى {$result['new_end_date']} (بدون تكلفة).",
                 'self_extend' => true,
                 'days' => $result['days'],
                 'new_end_date' => $result['new_end_date'],
@@ -134,7 +134,7 @@ class CustomerController extends Controller
         }
 
         return response()->json([
-            'message' => "تم تمديد اشتراكك تلقائياً لمدة {$result['days']} أيام حتى {$result['new_end_date']}.",
+            'message' => "تم تفعيل فترة سماح مجانية لمدة {$result['days']} أيام حتى {$result['new_end_date']} (بدون تكلفة).",
             'days' => $result['days'],
             'new_end_date' => $result['new_end_date'],
             'mikrotik' => $result['mikrotik'],

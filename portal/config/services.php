@@ -40,4 +40,34 @@ return [
         'server_key' => env('FCM_SERVER_KEY'),
     ],
 
+    /*
+    | Meta WhatsApp Cloud API — subscription/invoice reminders.
+    | Keep WHATSAPP_ENABLED=false until templates are approved and tested.
+    | Direct Meta API (no Chatwoot in this project).
+    */
+    'whatsapp' => [
+        'enabled' => env('WHATSAPP_ENABLED', false),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'api_version' => env('WHATSAPP_API_VERSION', 'v21.0'),
+        /** قالب افتراضي لتذكير قبل الانتهاء (إن لم تُحدد قوالب 3/1 منفصلة) */
+        'template_before' => env('WHATSAPP_TEMPLATE_REMINDER_BEFORE'),
+        'template_before_3' => env('WHATSAPP_TEMPLATE_REMINDER_BEFORE_3'),
+        'template_before_1' => env('WHATSAPP_TEMPLATE_REMINDER_BEFORE_1'),
+        /** رسالة فصل الخدمة */
+        'template_suspend' => env('WHATSAPP_TEMPLATE_SUSPEND'),
+        /** رسالة تأكيد الدفع */
+        'template_paid' => env('WHATSAPP_TEMPLATE_PAID'),
+        /** قديم — غير مستخدم في الجدولة الحالية */
+        'template_after' => env('WHATSAPP_TEMPLATE_REMINDER_AFTER'),
+        'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'ar'),
+        'before_days' => (function (): array {
+            $raw = explode(',', (string) env('WHATSAPP_BEFORE_DAYS', '3,1'));
+            $days = array_values(array_filter(array_map('intval', $raw), fn (int $d) => $d > 0));
+
+            return $days !== [] ? $days : [3, 1];
+        })(),
+        'schedule_time' => env('WHATSAPP_REMINDER_TIME', '10:30'),
+    ],
+
 ];

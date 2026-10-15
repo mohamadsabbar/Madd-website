@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\MikrotikService;
+use App\Services\WhatsAppLifecycleNotifier;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -27,7 +28,7 @@ class SuspendExpiredSubscribers extends Command
     /**
      * Execute the console command.
      */
-    public function handle(MikrotikService $mikrotikService): int
+    public function handle(MikrotikService $mikrotikService, WhatsAppLifecycleNotifier $whatsapp): int
     {
         $today = Carbon::today();
         $expiredSubscribers = Subscriber::where('status', '!=', 'suspended')
@@ -46,6 +47,8 @@ class SuspendExpiredSubscribers extends Command
             } catch (\Throwable $e) {
                 $mtNote = 'تعذّر تعطيل PPPoE: '.$e->getMessage();
             }
+
+            $whatsapp->notifySuspended($subscriber->fresh(), null, 'expired');
 
             ActivityLogger::warning(
                 'subscriber.auto_suspended_expired',

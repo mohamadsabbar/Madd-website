@@ -9,13 +9,16 @@ use App\Models\Plan;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\MikrotikService;
+use App\Services\WhatsAppLifecycleNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class AdminInvoiceController extends Controller
 {
-    public function __construct(private readonly MikrotikService $mikrotikService)
-    {
+    public function __construct(
+        private readonly MikrotikService $mikrotikService,
+        private readonly WhatsAppLifecycleNotifier $whatsAppLifecycleNotifier,
+    ) {
     }
 
     public function index()
@@ -122,6 +125,8 @@ class AdminInvoiceController extends Controller
                 'source' => 'admin_api',
             ],
         ]);
+
+        $this->whatsAppLifecycleNotifier->notifyPaid($subscriber->fresh(), $invoice->fresh(), $paidAmount);
 
         return $invoice->refresh()->load('payments');
     }

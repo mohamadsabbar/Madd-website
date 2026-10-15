@@ -13,6 +13,11 @@ Schedule::command('app:suspend-expired-subscribers')->dailyAt('00:30');
 Schedule::command('billing:send-reminders')->dailyAt(config('billing.reminder_time', '09:00'));
 Schedule::command('billing:send-expiry-reminders')->dailyAt(config('billing.expiry_reminder_time', '10:00'));
 
+/** WhatsApp Cloud API — معطّل عبر WHATSAPP_ENABLED حتى اعتماد القوالب */
+Schedule::command('billing:send-whatsapp-reminders')
+    ->dailyAt(config('services.whatsapp.schedule_time', '10:30'))
+    ->withoutOverlapping();
+
 Schedule::command('billing:generate-cycle-invoices')->dailyAt(config('billing.generate_invoices_time', '00:01'));
 Schedule::command('billing:suspend-unpaid')->dailyAt(config('billing.suspend_unpaid_time', '00:05'));
 

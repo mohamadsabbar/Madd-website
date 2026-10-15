@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\MikrotikService;
+use App\Services\WhatsAppLifecycleNotifier;
 use Illuminate\Console\Command;
 
 class SuspendUnpaidOnBillingDay extends Command
@@ -13,7 +14,7 @@ class SuspendUnpaidOnBillingDay extends Command
 
     protected $description = 'يوم الفوترة: قطع خدمة من لديهم فواتير غير مدفوعة (تعطيل PPPoE على المايكروتيك)';
 
-    public function handle(MikrotikService $mikrotik): int
+    public function handle(MikrotikService $mikrotik, WhatsAppLifecycleNotifier $whatsapp): int
     {
         $billingDay = (int) config('billing.billing_day', 5);
         $today = now();
@@ -48,6 +49,8 @@ class SuspendUnpaidOnBillingDay extends Command
             } catch (\Throwable $e) {
                 $mtNote = 'تعذّر تعطيل PPPoE: '.$e->getMessage();
             }
+
+            $whatsapp->notifySuspended($subscriber->fresh(), null, 'unpaid_billing_day');
             $count++;
 
             ActivityLogger::warning(

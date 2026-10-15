@@ -17,6 +17,7 @@ class AgentRenewalService
         private readonly MikrotikService $mikrotikService,
         private readonly BillingSmsService $billingSmsService,
         private readonly SubscriberBillingSyncService $billingSyncService,
+        private readonly WhatsAppLifecycleNotifier $whatsAppLifecycleNotifier,
     ) {}
 
     /**
@@ -208,6 +209,14 @@ class AgentRenewalService
             'partial' => false,
         ]);
 
+        $paidInvoice = $renewalInvoice
+            ?? $openInvoices->last()
+            ?? $subscriber->invoices()->latest('id')->first();
+
+        if ($paidInvoice && $totalCash > 0) {
+            $this->whatsAppLifecycleNotifier->notifyPaid($subscriber->fresh(), $paidInvoice, $totalCash);
+        }
+
         return $subscriber->load('plan');
     }
 
@@ -221,6 +230,7 @@ class AgentRenewalService
         $remaining = $amount;
         $applied = 0.0;
         $touched = 0;
+        $lastPaidInvoice = null;
 
         foreach ($openInvoices as $invoice) {
             if ($remaining <= 0) {
@@ -246,6 +256,7 @@ class AgentRenewalService
             $remaining -= $pay;
             $applied += $pay;
             $touched++;
+            $lastPaidInvoice = $invoice;
         }
 
         $subscriber->refresh();
@@ -260,6 +271,10 @@ class AgentRenewalService
             'invoices_touched' => $touched,
             'remaining_due' => $stillDue,
         ], 'payment.partial_received');
+
+        if ($lastPaidInvoice && $applied > 0) {
+            $this->whatsAppLifecycleNotifier->notifyPaid($subscriber->fresh(), $lastPaidInvoice, $applied);
+        }
 
         return $subscriber->load('plan');
     }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/api_client.dart';
 import '../../core/customer_repository.dart';
 import '../../core/theme.dart';
+import '../../core/widgets.dart';
 
 class InvoicesScreen extends StatefulWidget {
   const InvoicesScreen({super.key});
@@ -16,6 +17,7 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
   List<dynamic> _items = [];
   bool _loading = true;
   String? _error;
+  String _filter = 'all';
 
   @override
   void initState() {
@@ -44,69 +46,140 @@ class _InvoicesScreenState extends State<InvoicesScreen> {
     }
   }
 
+  List<dynamic> get _filtered {
+    return _items.where((raw) {
+      final inv = (raw as Map).cast<String, dynamic>();
+      final s = inv['status']?.toString() ?? '';
+      return switch (_filter) {
+        'paid' => s == 'paid',
+        'unpaid' => s == 'unpaid' || s == 'partial',
+        'late' => s == 'unpaid' && _isLate(inv),
+        _ => true,
+      };
+    }).toList();
+  }
+
+  bool _isLate(Map<String, dynamic> inv) {
+    final due = inv['due_date']?.toString();
+    if (due == null) return false;
+    final d = DateTime.tryParse(due);
+    if (d == null) return false;
+    return d.isBefore(DateTime.now()) && inv['status'] != 'paid';
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(_error!),
-            FilledButton(onPressed: _load, child: const Text('إعادة')),
-          ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: Row(
+            children: const [
+              Text('الفواتير', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 22)),
+            ],
+          ),
         ),
-      );
-    }
-    if (_items.isEmpty) {
-      return const Center(child: Text('لا توجد فواتير'));
-    }
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              _chip('all', 'الكل'),
+              _chip('paid', 'مدفوعة'),
+              _chip('unpaid', 'غير مدفوعة'),
+              _chip('late', 'متأخرة'),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: _loading
+              ? const Center(child: CircularProgressIndicator())
+              : _error != null
+                  ? Center(child: Text(_error!))
+                  : RefreshIndicator(
+                      onRefresh: _load,
+                      child: _filtered.isEmpty
+                          ? ListView(
+                              children: const [
+                                SizedBox(height: 80),
+                                Center(child: Text('لا توجد فواتير في هذا التبويب')),
+                              ],
+                            )
+                          : ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: _filtered.length,
+                              separatorBuilder: (_, __) => const SizedBox(height: 10),
+                              itemBuilder: (_, i) {
+                                final inv = (_filtered[i] as Map).cast<String, dynamic>();
+                                final paid = inv['status'] == 'paid';
+                                final late = !paid && _isLate(inv);
+                                return MaddCard(
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 46,
+                                        height: 46,
+                                        decoration: BoxDecoration(
+                                          color: MaddTheme.mist,
+                                          borderRadius: BorderRadius.circular(14),
+                                        ),
+                                        child: const Icon(Icons.description_outlined, color: MaddTheme.primary),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              _money(inv['amount']),
+                                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                                            ),
+                                            Text(
+                                              inv['due_date']?.toString() ?? inv['created_at']?.toString() ?? '',
+                                              style: const TextStyle(color: MaddTheme.muted, fontSize: 13),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      StatusPill(
+                                        label: paid
+                                            ? 'مدفوعة'
+                                            : late
+                                                ? 'متأخرة'
+                                                : (inv['status_label']?.toString() ?? 'غير مدفوعة'),
+                                        tone: paid
+                                            ? StatusTone.success
+                                            : late
+                                                ? StatusTone.danger
+                                                : StatusTone.warning,
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                    ),
+        ),
+      ],
+    );
+  }
 
-    return RefreshIndicator(
-      onRefresh: _load,
-      child: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: _items.length,
-        itemBuilder: (_, i) {
-          final inv = (_items[i] as Map).cast<String, dynamic>();
-          final status = inv['status']?.toString() ?? '';
-          final paid = status == 'paid';
-          return Card(
-            child: ListTile(
-              title: Text(
-                _money(inv['amount']),
-                style: const TextStyle(fontWeight: FontWeight.w700),
-              ),
-              subtitle: Text([
-                if (inv['due_date'] != null) 'الاستحقاق: ${inv['due_date']}',
-                if (inv['remaining'] != null) 'المتبقي: ${_money(inv['remaining'])}',
-                if (inv['period'] != null) inv['period'].toString(),
-              ].where((e) => e.toString().isNotEmpty).join('\n')),
-              trailing: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: paid ? Colors.green.shade50 : Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  paid ? 'مدفوعة' : 'غير مدفوعة',
-                  style: TextStyle(
-                    color: paid ? Colors.green.shade800 : Colors.orange.shade800,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              leading: CircleAvatar(
-                backgroundColor: MaddTheme.mist,
-                child: Icon(
-                  paid ? Icons.check_circle : Icons.receipt_long,
-                  color: MaddTheme.primary,
-                ),
-              ),
-            ),
-          );
-        },
+  Widget _chip(String id, String label) {
+    final selected = _filter == id;
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: ChoiceChip(
+        label: Text(label),
+        selected: selected,
+        onSelected: (_) => setState(() => _filter = id),
+        selectedColor: MaddTheme.primary,
+        labelStyle: TextStyle(
+          color: selected ? Colors.white : MaddTheme.ink,
+          fontWeight: FontWeight.w600,
+        ),
+        checkmarkColor: Colors.white,
       ),
     );
   }
