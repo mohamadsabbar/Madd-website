@@ -41,7 +41,8 @@ class WhatsAppCloudService
             return '';
         }
 
-        if (str_starts_with($digits, '970')) {
+        // Palestine / Israel country codes (already E.164 digits)
+        if (str_starts_with($digits, '970') || str_starts_with($digits, '972')) {
             return $digits;
         }
 
