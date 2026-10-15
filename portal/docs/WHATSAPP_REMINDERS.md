@@ -50,11 +50,27 @@ WHATSAPP_TEMPLATE_REMINDER_BEFORE_1=
 WHATSAPP_TEMPLATE_SUSPEND=madd_suspend
 WHATSAPP_TEMPLATE_PAID=madd_paid
 WHATSAPP_TEMPLATE_LANGUAGE=ar
+WHATSAPP_TEMPLATE_HEADER_TYPE=none
+WHATSAPP_TEMPLATE_HEADER_IMAGE_URL=
+WHATSAPP_TEMPLATE_HEADER_TEXT=
 WHATSAPP_BEFORE_DAYS=3,1
 WHATSAPP_REMINDER_TIME=10:30
 ```
 
 إن تُركت `BEFORE_3` / `BEFORE_1` فارغتين يُستخدم `WHATSAPP_TEMPLATE_REMINDER_BEFORE` لكليهما.
+
+### مقدمة القالب (Header)
+
+في Meta عند إنشاء/تعديل القالب → **Header**:
+- **None**: لا حاجة لإعداد في `.env`
+- **Text** ثابت (بدون `{{1}}`): لا حاجة لإعداد في `.env`
+- **Text** بمتغير: `WHATSAPP_TEMPLATE_HEADER_TYPE=text` + `WHATSAPP_TEMPLATE_HEADER_TEXT=...`
+- **Image**: ارفع صورة في Meta كعيّنة، وفي `.env`:
+  ```env
+  WHATSAPP_TEMPLATE_HEADER_TYPE=image
+  WHATSAPP_TEMPLATE_HEADER_IMAGE_URL=https://madd.ps/path/to/logo.png
+  ```
+  الرابط يجب أن يكون HTTPS عاماً.
 
 ## قوالب Meta (متغيرات الجسم بالترتيب)
 

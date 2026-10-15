@@ -61,6 +61,10 @@ return [
         /** قديم — غير مستخدم في الجدولة الحالية */
         'template_after' => env('WHATSAPP_TEMPLATE_REMINDER_AFTER'),
         'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'ar'),
+        /** none | image | text — يجب أن يطابق نوع المقدمة في قالب Meta */
+        'header_type' => env('WHATSAPP_TEMPLATE_HEADER_TYPE', 'none'),
+        'header_image_url' => env('WHATSAPP_TEMPLATE_HEADER_IMAGE_URL'),
+        'header_text' => env('WHATSAPP_TEMPLATE_HEADER_TEXT'),
         'before_days' => (function (): array {
             $raw = explode(',', (string) env('WHATSAPP_BEFORE_DAYS', '3,1'));
             $days = array_values(array_filter(array_map('intval', $raw), fn (int $d) => $d > 0));

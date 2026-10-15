@@ -86,13 +86,26 @@ class WhatsAppCloudService
             return ['ok' => false, 'message_id' => null];
         }
 
-        $parameters = [];
+        $bodyParameters = [];
         foreach ($bodyParams as $text) {
-            $parameters[] = [
+            $bodyParameters[] = [
                 'type' => 'text',
                 'text' => (string) $text,
             ];
         }
+
+        $components = [];
+
+        // Header (مقدمة القالب في Meta): image عبر رابط عام، أو نص بمتغير واحد
+        $headerComponent = $this->headerComponent();
+        if ($headerComponent !== null) {
+            $components[] = $headerComponent;
+        }
+
+        $components[] = [
+            'type' => 'body',
+            'parameters' => $bodyParameters,
+        ];
 
         $payload = [
             'messaging_product' => 'whatsapp',
@@ -101,12 +114,7 @@ class WhatsAppCloudService
             'template' => [
                 'name' => $templateName,
                 'language' => ['code' => $language],
-                'components' => [
-                    [
-                        'type' => 'body',
-                        'parameters' => $parameters,
-                    ],
-                ],
+                'components' => $components,
             ],
         ];
 
@@ -159,5 +167,58 @@ class WhatsAppCloudService
 
             return ['ok' => false, 'message_id' => null];
         }
+    }
+
+    /**
+     * Build optional template header component from env.
+     * - none / empty: omit (Meta static text header needs no API params)
+     * - image: WHATSAPP_TEMPLATE_HEADER_IMAGE_URL (public HTTPS)
+     * - text: WHATSAPP_TEMPLATE_HEADER_TEXT (only if header has {{1}})
+     *
+     * @return array<string, mixed>|null
+     */
+    private function headerComponent(): ?array
+    {
+        $type = strtolower(trim((string) config('services.whatsapp.header_type', 'none')));
+
+        if ($type === '' || $type === 'none') {
+            return null;
+        }
+
+        if ($type === 'image') {
+            $url = trim((string) config('services.whatsapp.header_image_url', ''));
+            if ($url === '') {
+                return null;
+            }
+
+            return [
+                'type' => 'header',
+                'parameters' => [
+                    [
+                        'type' => 'image',
+                        'image' => ['link' => $url],
+                    ],
+                ],
+            ];
+        }
+
+        if ($type === 'text') {
+            $text = trim((string) config('services.whatsapp.header_text', ''));
+            if ($text === '') {
+                return null;
+            }
+
+            return [
+                'type' => 'header',
+                'parameters' => [
+                    [
+                        'type' => 'text',
+                        'text' => $text,
+                    ],
+                ],
+            ];
+        }
+
+        return null;
     }
 }
