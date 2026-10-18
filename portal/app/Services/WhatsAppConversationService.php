@@ -130,7 +130,24 @@ class WhatsAppConversationService
             return;
         }
 
-        // أول رسالة / أي نص غير معروف → قائمة البداية
+        if ($this->isThanksOrBye($text)) {
+            $reply('العفو! نحن بخدمتك دائماً. إذا احتجت شيئاً اكتب: الدعم الفني أو المبيعات.');
+            $this->touchSession($phone, WhatsappChatSession::STATE_MENU);
+
+            return;
+        }
+
+        // قائمة البداية فقط لأول تواصل أو بعد انتهاء الجلسة — لا تُعاد مع كل رسالة
+        $inActiveMenu = $session
+            && ! $session->isExpired()
+            && $session->state === WhatsappChatSession::STATE_MENU;
+
+        if ($inActiveMenu) {
+            $reply('كيف نقدر نساعدك؟ اكتب: الدعم الفني أو المبيعات أو مدد خطك 3 أيام');
+
+            return;
+        }
+
         $this->sendStartMenu($phone, $reply);
     }
 
@@ -286,6 +303,20 @@ class WhatsAppConversationService
 
         return str_contains($t, 'المبيعات')
             || str_contains($t, 'مبيعات');
+    }
+
+    private function isThanksOrBye(string $text): bool
+    {
+        $t = mb_strtolower(trim(preg_replace('/\s+/u', ' ', $text) ?? $text));
+        $t = preg_replace('/[!!.،,]+$/u', '', $t) ?? $t;
+
+        foreach (['شكرا', 'شكراً', 'مشكور', 'يعطيك العافية', 'تسلم', '拜拜', 'مع السلامة', 'thanks', 'thank you', 'ok', 'تمام', 'اوك'] as $word) {
+            if ($t === $word || str_starts_with($t, $word.' ')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

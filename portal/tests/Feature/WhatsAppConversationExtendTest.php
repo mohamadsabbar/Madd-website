@@ -182,6 +182,57 @@ class WhatsAppConversationExtendTest extends TestCase
         });
     }
 
+    public function test_thanks_during_menu_does_not_resend_start_template(): void
+    {
+        config([
+            'services.whatsapp.enabled' => true,
+            'services.whatsapp.access_token' => 'token',
+            'services.whatsapp.phone_number_id' => '1',
+            'services.whatsapp.app_secret' => '',
+            'services.whatsapp.template_start' => 'button_start_message',
+            'services.whatsapp.template_language' => 'ar',
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.x']]], 200),
+        ]);
+
+        WhatsappChatSession::query()->create([
+            'phone' => '970599000444',
+            'state' => WhatsappChatSession::STATE_MENU,
+            'expires_at' => now()->addHour(),
+        ]);
+
+        app(WhatsAppConversationService::class)->handleWebhookPayload([
+            'entry' => [[
+                'changes' => [[
+                    'value' => [
+                        'messages' => [[
+                            'from' => '970599000444',
+                            'type' => 'text',
+                            'text' => ['body' => 'شكرا'],
+                        ]],
+                    ],
+                ]],
+            ]],
+        ]);
+
+        Http::assertSent(function ($request) {
+            $data = $request->data();
+            $body = (string) data_get($data, 'text.body', '');
+
+            return ($data['type'] ?? '') === 'text'
+                && str_contains($body, 'العفو');
+        });
+
+        Http::assertNotSent(function ($request) {
+            $data = $request->data();
+
+            return ($data['type'] ?? '') === 'template'
+                && ($data['template']['name'] ?? '') === 'button_start_message';
+        });
+    }
+
     public function test_support_button_then_subscription_number_reports_line(): void
     {
         config([
