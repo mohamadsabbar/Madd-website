@@ -84,4 +84,15 @@ return [
         'schedule_time' => env('WHATSAPP_REMINDER_TIME', '10:30'),
     ],
 
+    /*
+    | Chatwoot Agent Bot (keep Meta WhatsApp webhook on Chatwoot).
+    | Bot webhook URL: https://my.madd.ps/api/whatsapp/chatwoot-bot?token=...
+    */
+    'chatwoot' => [
+        'base_url' => env('CHATWOOT_BASE_URL', 'https://chat.madd.ps'),
+        'account_id' => (int) env('CHATWOOT_ACCOUNT_ID', 1),
+        'bot_access_token' => env('CHATWOOT_BOT_ACCESS_TOKEN'),
+        'bot_webhook_token' => env('CHATWOOT_BOT_WEBHOOK_TOKEN'),
+    ],
+
 ];

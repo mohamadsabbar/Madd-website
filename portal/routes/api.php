@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CustomerAccountController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerTicketController;
 use App\Http\Controllers\Api\SiteCmsController;
+use App\Http\Controllers\Api\ChatwootAgentBotController;
 use App\Http\Controllers\Api\WhatsAppWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,6 +32,9 @@ Route::post('/customer/reset-password', [CustomerAccountController::class, 'rese
 /** Meta WhatsApp Cloud API webhook (verify + inbound chat) */
 Route::get('/whatsapp/webhook', [WhatsAppWebhookController::class, 'verify']);
 Route::post('/whatsapp/webhook', [WhatsAppWebhookController::class, 'handle']);
+
+/** Chatwoot Agent Bot → تمديد برقم الاشتراك (أبقِ Meta webhook على Chatwoot) */
+Route::post('/whatsapp/chatwoot-bot', [ChatwootAgentBotController::class, 'handle']);
 
 /** محتوى الموقع التسويقي + الطلبات */
 Route::prefix('site')->group(function () {

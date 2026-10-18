@@ -17,7 +17,29 @@
 
 رقم الاشتراك فريد لكل مشترك (`subscribers.subscription_number`). الإرسال يبقى على رقم الجوال.
 
-### Webhook في Meta
+### المسار الموصى به مع Chatwoot (لديكم الآن)
+
+1. **اترك** Callback URL في Meta على Chatwoot كما هو:
+   `https://chat.madd.ps/webhooks/whatsapp/+970...`
+2. في Chatwoot → Settings → Bots → Add Bot:
+   - الاسم: `مدد تمديد`
+   - Webhook URL:
+     ```text
+     https://my.madd.ps/api/whatsapp/chatwoot-bot?token=YOUR_SECRET
+     ```
+   - انسخ **Access Token** الخاص بالبوت → `CHATWOOT_BOT_ACCESS_TOKEN`
+3. اربط البوت بـ Inbox واتساب.
+4. في `portal/.env`:
+   ```env
+   CHATWOOT_BASE_URL=https://chat.madd.ps
+   CHATWOOT_ACCOUNT_ID=1
+   CHATWOOT_BOT_ACCESS_TOKEN=...
+   CHATWOOT_BOT_WEBHOOK_TOKEN=YOUR_SECRET
+   ```
+
+بهذا تبقى رسائل الدعم في Chatwoot، ومدد يعالج فقط مسار التمديد.
+
+### Webhook مباشر Meta (بديل — بدون Chatwoot على نفس الرقم)
 
 - Callback URL: `https://my.madd.ps/api/whatsapp/webhook`
 - Verify token: نفس `WHATSAPP_WEBHOOK_VERIFY_TOKEN`
