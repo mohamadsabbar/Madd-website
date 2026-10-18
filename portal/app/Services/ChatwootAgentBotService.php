@@ -49,18 +49,29 @@ class ChatwootAgentBotService
             ?: 0
         );
 
+        Log::info('Chatwoot bot inbound', [
+            'phone' => $phone,
+            'text' => mb_substr($text, 0, 80),
+            'conversation_id' => $conversationId,
+        ]);
+
         $this->conversations->handleInboundText(
             $phone,
             $text,
             function (string $reply) use ($conversationId, $phone): void {
+                $sent = false;
                 if ($conversationId > 0 && $this->chatwoot->isConfigured()) {
-                    $this->chatwoot->sendConversationMessage($conversationId, $reply);
-
-                    return;
+                    $sent = $this->chatwoot->sendConversationMessage($conversationId, $reply);
                 }
 
-                // Fallback: reply via Meta Cloud API if Chatwoot API not configured
-                $this->whatsapp->sendText($phone, $reply);
+                if (! $sent) {
+                    $wa = $this->whatsapp->sendText($phone, $reply);
+                    Log::info('Chatwoot bot reply fallback to WhatsApp', [
+                        'phone' => $phone,
+                        'ok' => $wa['ok'] ?? false,
+                        'error' => $this->whatsapp->getLastError(),
+                    ]);
+                }
             },
             $payload
         );
@@ -112,9 +123,13 @@ class ChatwootAgentBotService
     {
         $candidates = [
             data_get($payload, 'sender.phone_number'),
+            data_get($payload, 'sender.phone'),
             data_get($payload, 'contact.phone_number'),
+            data_get($payload, 'contact.phone'),
             data_get($payload, 'conversation.meta.sender.phone_number'),
+            data_get($payload, 'conversation.meta.sender.identifier'),
             data_get($payload, 'conversation.contact_inbox.source_id'),
+            data_get($payload, 'conversation.source_id'),
             data_get($payload, 'source_id'),
         ];
 
