@@ -20,6 +20,7 @@
     <article class="cp-card">
         <h2>تفاصيل الحساب</h2>
         <div class="cp-meta">
+            <div class="cp-meta__row"><span class="cp-meta__label">رقم الاشتراك</span><span class="cp-meta__value">{{ $account['subscription_number'] ?? '—' }}</span></div>
             <div class="cp-meta__row"><span class="cp-meta__label">الجوال</span><span class="cp-meta__value">{{ $account['phone'] }}</span></div>
             <div class="cp-meta__row"><span class="cp-meta__label">اسم المستخدم</span><span class="cp-meta__value">{{ $account['pppoe_username'] }}</span></div>
             <div class="cp-meta__row"><span class="cp-meta__label">العنوان</span><span class="cp-meta__value">{{ $account['address'] ?: '—' }}</span></div>

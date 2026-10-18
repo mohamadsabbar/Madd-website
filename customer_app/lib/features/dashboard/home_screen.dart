@@ -106,6 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final renewal = (_data?['renewal'] as Map?)?.cast<String, dynamic>() ?? {};
     final name = account['full_name']?.toString() ?? auth.user?['name']?.toString() ?? 'مشترك';
     final first = name.split(RegExp(r'\s+')).first;
+    final subNo = account['subscription_number']?.toString();
     final expired = account['is_expired'] == true || renewal['needs_attention'] == true;
     final online = account['is_online'] == true;
     final statusLabel = account['status_label']?.toString() ?? account['status']?.toString() ?? '—';
@@ -135,7 +136,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text('مرحباً، $first', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18)),
                     Text(
-                      online ? 'متصل الآن' : 'غير متصل',
+                      [
+                        if (subNo != null && subNo.isNotEmpty) subNo,
+                        online ? 'متصل الآن' : 'غير متصل',
+                      ].join(' · '),
                       style: TextStyle(color: online ? MaddTheme.success : MaddTheme.muted, fontSize: 13),
                     ),
                   ],

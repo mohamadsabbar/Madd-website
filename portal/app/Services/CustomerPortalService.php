@@ -57,6 +57,7 @@ class CustomerPortalService
 
         return [
             'id' => $subscriber->id,
+            'subscription_number' => $subscriber->subscription_number,
             'full_name' => $subscriber->full_name,
             'phone' => $subscriber->phone,
             'address' => $subscriber->address,

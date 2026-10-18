@@ -73,6 +73,7 @@ class AgentDashboardController extends Controller
                 ->where(function ($query) use ($q) {
                     $query->where('full_name', 'like', "%{$q}%")
                         ->orWhere('phone', 'like', "%{$q}%")
+                        ->orWhere('subscription_number', 'like', "%{$q}%")
                         ->orWhere('pppoe_username', 'like', "%{$q}%");
                 })
                 ->limit(50)

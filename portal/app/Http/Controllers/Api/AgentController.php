@@ -26,6 +26,7 @@ class AgentController extends Controller
             ->where(function ($q) use ($term) {
                 $q->where('full_name', 'like', "%{$term}%")
                     ->orWhere('phone', 'like', "%{$term}%")
+                    ->orWhere('subscription_number', 'like', "%{$term}%")
                     ->orWhere('pppoe_username', 'like', "%{$term}%");
             })
             ->limit(20)

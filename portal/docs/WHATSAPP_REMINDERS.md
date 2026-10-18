@@ -1,80 +1,54 @@
 # تذكيرات WhatsApp لاشتراكات مدد
 
-## لماذا مسار مباشر إلى Meta؟
-
-المشروع لا يضم Chatwoot. الإرسال عبر **WhatsApp Cloud API** مباشرة لتفادي مسار غير موجود وإرسال مزدوج.
-
 ## تسلسل الرسائل
 
-| الترتيب | متى | المرحلة | المصدر | زر التمديد |
-|--------|-----|---------|--------|------------|
-| 1 | قبل 3 أيام من `end_date` | `before_3` | جدولة يومية | لا |
-| 2 | قبل يوم واحد | `before_1` | جدولة يومية | نعم — مدد خطك 3 أيام |
-| 3 | عند فصل/تعليق الخدمة | `suspend` | أوامر التعليق التلقائي | نعم — مدد خطك 3 أيام |
-| 4 | عند تسجيل دفعة | `paid` | تحصيل وكيل / دفع فاتورة أدمن | لا |
+| الترتيب | متى | المرحلة | زر |
+|--------|-----|---------|-----|
+| 1 | قبل 3 أيام | `before_3` | لا |
+| 2 | قبل يوم | `before_1` | Quick Reply: مدد خطك 3 أيام |
+| 3 | فصل الخدمة | `suspend` | Quick Reply: مدد خطك 3 أيام |
+| 4 | دفع | `paid` | لا |
 
-فشل WhatsApp **لا** يوقف الفوترة أو MikroTik.
+## محادثة التمديد برقم الاشتراك
 
-## زر «مدد خطك 3 أيام»
+1. الزبون يضغط زر **مدد خطك 3 أيام** (Quick Reply في القالب).
+2. البوت يرد: «أرسل رقم الاشتراك» (مثال `MADD-000003`).
+3. الزبون يرسل الرقم → تمديد ذاتي إن كان مؤهلاً (منتهٍ أو مفصول + محاولات متبقية).
 
-### الوضع الموصى به (زر ثابت — متوافق مع Chatwoot)
+رقم الاشتراك فريد لكل مشترك (`subscribers.subscription_number`). الإرسال يبقى على رقم الجوال.
 
-- رابط الزر في Meta: `https://my.madd.ps/wa/extend` (**بدون** `{{1}}`)
-- في `.env`: `WHATSAPP_CTA_URL_DYNAMIC=false`
-- عند الضغط: صفحة تطلب رقم الجوال ثم تنفّذ التمديد إن كان متاحاً
+### Webhook في Meta
 
-### وضع التوكن الديناميكي (اختياري)
+- Callback URL: `https://my.madd.ps/api/whatsapp/webhook`
+- Verify token: نفس `WHATSAPP_WEBHOOK_VERIFY_TOKEN`
+- اشترك في `messages`
 
-- رابط الزر: `https://my.madd.ps/wa/extend/{{1}}`
-- في `.env`: `WHATSAPP_CTA_URL_DYNAMIC=true`
-- النظام يرسل لاحقة التوكن مع رسالة واتساب
+### قوالب Meta (before_1 / suspend)
 
-إذا ظهر خطأ Meta `Button at index 0 of type Url does not require parameters` فالزر ثابت — اترك `WHATSAPP_CTA_URL_DYNAMIC=false`.
+- Body: `{{1}}`…`{{4}}` كالسابق
+- Button: **Quick Reply** نصه `مدد خطك 3 أيام` (ليس Visit website)
 
-### إعداد القالب في Meta
+## متغيرات `.env`
 
-1. أنشئ/حدّث `madd_reminder_before_1` و`madd_suspend` (Utility / Arabic).
-2. Body: المتغيرات `{{1}}` الاسم، `{{2}}` الفاتورة، `{{3}}` المبلغ، `{{4}}` التاريخ.
-3. Buttons → **Visit website**
-   - نص الزر: `مدد خطك 3 أيام`
-   - الرابط الثابت: `https://my.madd.ps/wa/extend`
-4. اعتمد القالب ثم ضع الأسماء في `.env`.
+```env
+WHATSAPP_ENABLED=true
+WHATSAPP_ACCESS_TOKEN=
+WHATSAPP_PHONE_NUMBER_ID=
+WHATSAPP_APP_SECRET=
+WHATSAPP_WEBHOOK_VERIFY_TOKEN=
+WHATSAPP_TEMPLATE_REMINDER_BEFORE=madd_reminder_before
+WHATSAPP_TEMPLATE_REMINDER_BEFORE_1=madd_reminder_before_1
+WHATSAPP_TEMPLATE_SUSPEND=madd_suspend
+WHATSAPP_TEMPLATE_PAID=madd_paid
+WHATSAPP_TEMPLATE_LANGUAGE=ar
+WHATSAPP_CTA_EXTEND_STAGES=before_1,suspend
+WHATSAPP_CTA_URL_DYNAMIC=false
+WHATSAPP_CHAT_SESSION_TTL_HOURS=6
+```
 
-## الأمر (تذكيرات قبل الانتهاء فقط)
+## أوامر
 
 ```bash
 php artisan billing:send-whatsapp-reminders --dry-run
 php artisan billing:send-whatsapp-reminders
 ```
-
-مجدول يومياً في `routes/console.php` على `WHATSAPP_REMINDER_TIME` (افتراضي 10:30).
-
-## متغيرات `.env`
-
-```env
-WHATSAPP_ENABLED=false
-WHATSAPP_ACCESS_TOKEN=
-WHATSAPP_PHONE_NUMBER_ID=
-WHATSAPP_API_VERSION=v21.0
-WHATSAPP_TEMPLATE_REMINDER_BEFORE=madd_reminder_before
-WHATSAPP_TEMPLATE_REMINDER_BEFORE_3=
-WHATSAPP_TEMPLATE_REMINDER_BEFORE_1=madd_reminder_before_1
-WHATSAPP_TEMPLATE_SUSPEND=madd_suspend
-WHATSAPP_TEMPLATE_PAID=madd_paid
-WHATSAPP_TEMPLATE_LANGUAGE=ar
-WHATSAPP_TEMPLATE_HEADER_TYPE=none
-WHATSAPP_TEMPLATE_HEADER_IMAGE_URL=
-WHATSAPP_TEMPLATE_HEADER_TEXT=
-WHATSAPP_CTA_EXTEND_STAGES=before_1,suspend
-WHATSAPP_CTA_URL_DYNAMIC=false
-WHATSAPP_EXTEND_TOKEN_TTL_HOURS=72
-WHATSAPP_BEFORE_DAYS=3,1
-WHATSAPP_REMINDER_TIME=10:30
-```
-
-## قوالب Meta (متغيرات الجسم بالترتيب)
-
-1. اسم العميل  
-2. رقم الفاتورة  
-3. المبلغ (مستحق للتذكير/الفصل، أو المدفوع لرسالة الدفع) بالشيكل  
-4. تاريخ انتهاء الاشتراك  

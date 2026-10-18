@@ -68,11 +68,13 @@ return [
         /** مراحل تُرفق بزر URL «مدد خطك 3 أيام» — before_1,suspend */
         'cta_extend_stages' => env('WHATSAPP_CTA_EXTEND_STAGES', 'before_1,suspend'),
         /**
-         * true فقط إذا زر Meta فيه لاحقة ديناميكية: https://my.madd.ps/wa/extend/{{1}}
-         * false (افتراضي) لزر ثابت مثل Chatwoot: https://my.madd.ps/wa/extend
+         * Legacy URL-button suffix. Keep false — extend CTA is Quick Reply + chat webhook.
          */
         'cta_url_dynamic' => env('WHATSAPP_CTA_URL_DYNAMIC', false),
         'extend_token_ttl_hours' => (int) env('WHATSAPP_EXTEND_TOKEN_TTL_HOURS', 72),
+        'webhook_verify_token' => env('WHATSAPP_WEBHOOK_VERIFY_TOKEN'),
+        'app_secret' => env('WHATSAPP_APP_SECRET'),
+        'chat_session_ttl_hours' => (int) env('WHATSAPP_CHAT_SESSION_TTL_HOURS', 6),
         'before_days' => (function (): array {
             $raw = explode(',', (string) env('WHATSAPP_BEFORE_DAYS', '3,1'));
             $days = array_values(array_filter(array_map('intval', $raw), fn (int $d) => $d > 0));

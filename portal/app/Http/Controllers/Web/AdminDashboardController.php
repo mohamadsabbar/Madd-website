@@ -109,6 +109,8 @@ class AdminDashboardController extends Controller
             $query->where(function ($q2) use ($q) {
                 $q2->where('full_name', 'like', "%{$q}%")
                     ->orWhere('phone', 'like', "%{$q}%")
+                    ->orWhere('subscription_number', 'like', "%{$q}%")
+                    ->orWhere('pppoe_username', 'like', "%{$q}%")
                     ->orWhere('pppoe_username', 'like', "%{$q}%");
             });
         }

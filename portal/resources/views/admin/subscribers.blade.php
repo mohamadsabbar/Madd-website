@@ -100,7 +100,7 @@
                             <td class="fw-bold">#{{ $s->id }}</td>
                             <td>
                                 <a href="{{ route('web.admin.subscribers.show', $s) }}" class="text-decoration-none fw-semibold" style="color:inherit;">{{ $s->full_name }}</a>
-                                <div style="font-size:0.8rem;color:#64748b;">{{ $s->phone }}</div>
+                                <div style="font-size:0.8rem;color:#64748b;">{{ $s->subscription_number ?: '—' }} · {{ $s->phone }}</div>
                             </td>
                             <td>{{ $s->plan?->name ?? '—' }}</td>
                             <td>{{ $s->plan ? number_format($s->plan->price, 2) . ' شيكل' : '—' }}</td>

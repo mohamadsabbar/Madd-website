@@ -192,6 +192,72 @@ class WhatsAppCloudService
     }
 
     /**
+     * Session text message (allowed inside 24h customer care window after user reply).
+     *
+     * @return array{ok: bool, message_id: ?string}
+     */
+    public function sendText(string $phone, string $body): array
+    {
+        $this->lastError = null;
+        $to = $this->normalizePhone($phone);
+        $body = trim($body);
+
+        if ($to === '' || strlen($to) < 10) {
+            $this->lastError = 'رقم هاتف غير صالح.';
+
+            return ['ok' => false, 'message_id' => null];
+        }
+
+        if ($body === '') {
+            $this->lastError = 'نص الرسالة فارغ.';
+
+            return ['ok' => false, 'message_id' => null];
+        }
+
+        if (! $this->isLive()) {
+            $this->lastError = 'WhatsApp معطّل أو ناقص الإعدادات.';
+
+            return ['ok' => false, 'message_id' => null];
+        }
+
+        $version = trim((string) config('services.whatsapp.api_version', 'v21.0'), '/');
+        $phoneNumberId = (string) config('services.whatsapp.phone_number_id');
+        $url = "https://graph.facebook.com/{$version}/{$phoneNumberId}/messages";
+
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'to' => $to,
+            'type' => 'text',
+            'text' => [
+                'preview_url' => false,
+                'body' => $body,
+            ],
+        ];
+
+        try {
+            $response = Http::withToken((string) config('services.whatsapp.access_token'))
+                ->acceptJson()
+                ->asJson()
+                ->timeout(25)
+                ->post($url, $payload);
+
+            if ($response->successful()) {
+                $messageId = data_get($response->json(), 'messages.0.id');
+
+                return ['ok' => true, 'message_id' => is_string($messageId) ? $messageId : null];
+            }
+
+            $this->lastError = 'HTTP '.$response->status().': '.Str::limit((string) $response->body(), 400);
+
+            return ['ok' => false, 'message_id' => null];
+        } catch (\Throwable $e) {
+            $this->lastError = $e->getMessage();
+
+            return ['ok' => false, 'message_id' => null];
+        }
+    }
+
+    /**
      * Build optional template header component from env.
      * - none / empty: omit (Meta static text header needs no API params)
      * - image: WHATSAPP_TEMPLATE_HEADER_IMAGE_URL (public HTTPS)

@@ -19,6 +19,7 @@
             <div>
                 <h1 class="mb-1">{{ $subscriber->full_name }}</h1>
                 <p class="mb-0 text-muted small">
+                    <span class="me-3"><i class="bi bi-hash ms-1"></i>{{ $subscriber->subscription_number ?: '—' }}</span>
                     <span class="me-3"><i class="bi bi-telephone ms-1"></i>{{ $subscriber->phone }}</span>
                     @if($subscriber->address)
                         <span><i class="bi bi-geo-alt ms-1"></i>{{ $subscriber->address }}</span>

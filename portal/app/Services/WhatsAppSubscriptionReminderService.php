@@ -156,9 +156,7 @@ class WhatsAppSubscriptionReminderService
         if ($dryRun) {
             $note = 'كان سيُرسل قالب '.$template;
             if ($this->extendLinks->stageSupportsCta($stage)) {
-                $note .= $this->extendLinks->usesDynamicUrlButton()
-                    ? ' + زر تمديد (ديناميكي)'
-                    : ' + زر تمديد (ثابت في القالب)';
+                $note .= ' + زر Quick Reply (محادثة رقم الاشتراك)';
             }
 
             return [

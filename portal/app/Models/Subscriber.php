@@ -18,6 +18,7 @@ class Subscriber extends Model
 
     protected $fillable = [
         'user_id',
+        'subscription_number',
         'full_name',
         'phone',
         'address',
@@ -33,6 +34,40 @@ class Subscriber extends Model
         'suspended_at',
         'self_extend_count',
     ];
+
+    protected static function booted(): void
+    {
+        static::created(function (Subscriber $subscriber) {
+            if (filled($subscriber->subscription_number)) {
+                return;
+            }
+
+            $subscriber->forceFill([
+                'subscription_number' => static::formatSubscriptionNumber((int) $subscriber->id),
+            ])->saveQuietly();
+        });
+    }
+
+    public static function formatSubscriptionNumber(int $id): string
+    {
+        return 'MADD-'.str_pad((string) $id, 6, '0', STR_PAD_LEFT);
+    }
+
+    public static function normalizeSubscriptionNumber(string $value): string
+    {
+        $value = strtoupper(trim($value));
+        $value = preg_replace('/\s+/', '', $value) ?? $value;
+
+        if (preg_match('/^\d+$/', $value)) {
+            return static::formatSubscriptionNumber((int) $value);
+        }
+
+        if (preg_match('/^MADD-?(\d+)$/', $value, $m)) {
+            return static::formatSubscriptionNumber((int) $m[1]);
+        }
+
+        return $value;
+    }
 
     protected $casts = [
         'start_date' => 'date',

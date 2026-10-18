@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\CustomerAccountController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerTicketController;
 use App\Http\Controllers\Api\SiteCmsController;
+use App\Http\Controllers\Api\WhatsAppWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,10 @@ Route::get('/', function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/customer/forgot-password', [CustomerAccountController::class, 'forgotPassword']);
 Route::post('/customer/reset-password', [CustomerAccountController::class, 'resetPassword']);
+
+/** Meta WhatsApp Cloud API webhook (verify + inbound chat) */
+Route::get('/whatsapp/webhook', [WhatsAppWebhookController::class, 'verify']);
+Route::post('/whatsapp/webhook', [WhatsAppWebhookController::class, 'handle']);
 
 /** محتوى الموقع التسويقي + الطلبات */
 Route::prefix('site')->group(function () {
