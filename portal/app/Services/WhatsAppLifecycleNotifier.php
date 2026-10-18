@@ -13,8 +13,10 @@ use Illuminate\Support\Facades\Log;
  */
 class WhatsAppLifecycleNotifier
 {
-    public function __construct(private WhatsAppCloudService $whatsapp)
-    {
+    public function __construct(
+        private WhatsAppCloudService $whatsapp,
+        private WhatsAppExtendLinkService $extendLinks,
+    ) {
     }
 
     public function notifySuspended(Subscriber $subscriber, ?Invoice $invoice = null, string $reason = 'suspended'): void
@@ -35,7 +37,8 @@ class WhatsAppLifecycleNotifier
                 $invoiceNo,
                 $amount,
                 $endDate,
-            ]
+            ],
+            withExtendButton: true,
         );
     }
 
@@ -65,7 +68,8 @@ class WhatsAppLifecycleNotifier
         string $stage,
         string $periodKey,
         string $template,
-        array $params
+        array $params,
+        bool $withExtendButton = false,
     ): void {
         try {
             if (! $this->whatsapp->isLive()) {
@@ -111,7 +115,11 @@ class WhatsAppLifecycleNotifier
                 return;
             }
 
-            $result = $this->whatsapp->sendTemplate($phone, $template, $params);
+            $urlButtonSuffix = $withExtendButton
+                ? $this->extendLinks->buttonSuffix($subscriber, $stage)
+                : null;
+
+            $result = $this->whatsapp->sendTemplate($phone, $template, $params, null, $urlButtonSuffix);
 
             $log->update([
                 'invoice_id' => $invoice?->id,

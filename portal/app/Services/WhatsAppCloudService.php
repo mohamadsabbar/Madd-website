@@ -59,10 +59,16 @@ class WhatsAppCloudService
 
     /**
      * @param  list<string>  $bodyParams  Template body variables in order {{1}}…
+     * @param  string|null  $urlButtonSuffix  Dynamic path suffix for Visit website button (index 0)
      * @return array{ok: bool, message_id: ?string, dry_run?: bool}
      */
-    public function sendTemplate(string $phone, string $templateName, array $bodyParams, ?string $language = null): array
-    {
+    public function sendTemplate(
+        string $phone,
+        string $templateName,
+        array $bodyParams,
+        ?string $language = null,
+        ?string $urlButtonSuffix = null
+    ): array {
         $this->lastError = null;
         $to = $this->normalizePhone($phone);
 
@@ -107,6 +113,21 @@ class WhatsAppCloudService
             'type' => 'body',
             'parameters' => $bodyParameters,
         ];
+
+        $suffix = trim((string) $urlButtonSuffix);
+        if ($suffix !== '') {
+            $components[] = [
+                'type' => 'button',
+                'sub_type' => 'url',
+                'index' => '0',
+                'parameters' => [
+                    [
+                        'type' => 'text',
+                        'text' => $suffix,
+                    ],
+                ],
+            ];
+        }
 
         $payload = [
             'messaging_product' => 'whatsapp',

@@ -65,4 +65,36 @@ class WhatsAppCloudServiceTest extends TestCase
         $this->assertFalse($result['ok']);
         Http::assertNothingSent();
     }
+
+    public function test_send_template_includes_url_button_suffix(): void
+    {
+        config([
+            'services.whatsapp.enabled' => true,
+            'services.whatsapp.access_token' => 'token',
+            'services.whatsapp.phone_number_id' => '99',
+            'services.whatsapp.api_version' => 'v21.0',
+            'services.whatsapp.template_language' => 'ar',
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.btn']]], 200),
+        ]);
+
+        $svc = new WhatsAppCloudService;
+        $svc->sendTemplate('0599123456', 'madd_suspend', ['أ', 'INV', '1', '2026-10-16'], null, 'abc123token');
+
+        Http::assertSent(function ($request) {
+            $components = $request['template']['components'] ?? [];
+            foreach ($components as $component) {
+                if (($component['type'] ?? '') === 'button'
+                    && ($component['sub_type'] ?? '') === 'url'
+                    && ($component['parameters'][0]['text'] ?? '') === 'abc123token'
+                ) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
 }

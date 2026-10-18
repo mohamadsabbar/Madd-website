@@ -286,12 +286,14 @@ class CustomerPortalService
         $used = max(0, (int) ($subscriber->self_extend_count ?? 0));
         $max = count($schedule);
         $expired = $this->isSubscriptionExpired($subscriber);
+        $suspended = $subscriber->status === 'suspended';
         $nextDays = $schedule[$used] ?? null;
-        $canSelfExtend = $expired && $nextDays !== null;
+        // بعد الانتهاء أو عند الفصل (حتى لو تاريخ الانتهاء لم يمر بعد يوم الفوترة)
+        $canSelfExtend = ($expired || $suspended) && $nextDays !== null;
 
         $message = null;
-        if (! $expired) {
-            $message = 'فترة السماح المجانية تظهر بعد انتهاء الاشتراك.';
+        if (! $expired && ! $suspended) {
+            $message = 'فترة السماح المجانية تظهر بعد انتهاء الاشتراك أو فصل الخدمة.';
         } elseif ($canSelfExtend) {
             $attempt = $used + 1;
             $message = $attempt === 1
@@ -309,6 +311,7 @@ class CustomerPortalService
             'remaining_count' => max(0, $max - $used),
             'schedule' => $schedule,
             'is_expired' => $expired,
+            'is_suspended' => $suspended,
             'message' => $message,
         ];
     }

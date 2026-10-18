@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\AdminSubscriberController;
 use App\Http\Controllers\Web\AgentDashboardController;
 use App\Http\Controllers\Web\AuthWebController;
 use App\Http\Controllers\Web\CustomerPortalController;
+use App\Http\Controllers\Web\WhatsAppExtendController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +36,11 @@ Route::get('/', function () {
 
 /** توافق مع الروابط القديمة التي كانت تستخدم `/company` */
 Route::permanentRedirect('/company', '/');
+
+/** تمديد ذاتي من زر واتساب (بدون تسجيل دخول) */
+Route::get('/wa/extend/{token}', [WhatsAppExtendController::class, 'show'])
+    ->where('token', '[A-Za-z0-9]+')
+    ->name('web.whatsapp.extend');
 
 /** بوابة المشترك — ويب (وأساس تطبيق الجوال عبر /api/customer/*) */
 Route::middleware('guest')->group(function () {

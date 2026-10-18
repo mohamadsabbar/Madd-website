@@ -15,8 +15,10 @@ use Illuminate\Support\Facades\Log;
  */
 class WhatsAppSubscriptionReminderService
 {
-    public function __construct(private WhatsAppCloudService $whatsapp)
-    {
+    public function __construct(
+        private WhatsAppCloudService $whatsapp,
+        private WhatsAppExtendLinkService $extendLinks,
+    ) {
     }
 
     /**
@@ -152,9 +154,14 @@ class WhatsAppSubscriptionReminderService
         }
 
         if ($dryRun) {
+            $note = 'كان سيُرسل قالب '.$template;
+            if ($this->extendLinks->stageSupportsCta($stage)) {
+                $note .= ' + زر تمديد';
+            }
+
             return [
                 'bucket' => 'skipped',
-                'row' => $this->row($subscriber, $invoice, $stage, 'dry-run', 'كان سيُرسل قالب '.$template, $params),
+                'row' => $this->row($subscriber, $invoice, $stage, 'dry-run', $note, $params),
             ];
         }
 
@@ -202,8 +209,10 @@ class WhatsAppSubscriptionReminderService
             ];
         }
 
+        $buttonSuffix = $this->extendLinks->buttonSuffix($subscriber, $stage);
+
         try {
-            $send = $this->whatsapp->sendTemplate($normalized, $template, $params);
+            $send = $this->whatsapp->sendTemplate($normalized, $template, $params, null, $buttonSuffix);
         } catch (\Throwable $e) {
             Log::warning('WhatsApp reminder isolated failure', ['error' => $e->getMessage()]);
             $log->update([
