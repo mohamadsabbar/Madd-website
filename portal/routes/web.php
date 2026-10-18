@@ -38,6 +38,7 @@ Route::get('/', function () {
 Route::permanentRedirect('/company', '/');
 
 /** تمديد ذاتي من زر واتساب (بدون تسجيل دخول) — رابط ثابت أو توكن ديناميكي */
+Route::redirect('/wa/extend/', '/wa/extend', 301);
 Route::get('/wa/extend', [WhatsAppExtendController::class, 'form'])->name('web.whatsapp.extend.form');
 Route::post('/wa/extend', [WhatsAppExtendController::class, 'submit'])->name('web.whatsapp.extend.submit');
 Route::get('/wa/extend/{token}', [WhatsAppExtendController::class, 'show'])
