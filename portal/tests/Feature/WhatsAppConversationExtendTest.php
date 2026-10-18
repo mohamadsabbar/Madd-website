@@ -128,8 +128,123 @@ class WhatsAppConversationExtendTest extends TestCase
         $this->assertSame(1, (int) $subscriber->self_extend_count);
         $this->assertDatabaseHas('whatsapp_chat_sessions', [
             'phone' => '970599000111',
-            'state' => WhatsappChatSession::STATE_IDLE,
+            'state' => WhatsappChatSession::STATE_MENU,
         ]);
+    }
+
+    public function test_first_message_sends_start_menu_template(): void
+    {
+        config([
+            'services.whatsapp.enabled' => true,
+            'services.whatsapp.access_token' => 'token',
+            'services.whatsapp.phone_number_id' => '1',
+            'services.whatsapp.app_secret' => '',
+            'services.whatsapp.template_start' => 'button_start_message',
+            'services.whatsapp.template_language' => 'ar',
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.start']]], 200),
+        ]);
+
+        app(WhatsAppConversationService::class)->handleWebhookPayload([
+            'entry' => [[
+                'changes' => [[
+                    'value' => [
+                        'messages' => [[
+                            'from' => '970599000222',
+                            'type' => 'text',
+                            'text' => ['body' => 'مرحبا'],
+                        ]],
+                    ],
+                ]],
+            ]],
+        ]);
+
+        $this->assertDatabaseHas('whatsapp_chat_sessions', [
+            'phone' => '970599000222',
+            'state' => WhatsappChatSession::STATE_MENU,
+        ]);
+
+        Http::assertSent(function ($request) {
+            $data = $request->data();
+
+            return ($data['type'] ?? '') === 'template'
+                && ($data['template']['name'] ?? '') === 'button_start_message';
+        });
+    }
+
+    public function test_support_button_then_subscription_number_reports_line(): void
+    {
+        config([
+            'services.whatsapp.enabled' => true,
+            'services.whatsapp.access_token' => 'token',
+            'services.whatsapp.phone_number_id' => '1',
+            'services.whatsapp.app_secret' => '',
+            'services.whatsapp.template_check_line' => 'afhas_khatak',
+            'services.whatsapp.template_language' => 'ar',
+        ]);
+
+        Http::fake([
+            'graph.facebook.com/*' => Http::response(['messages' => [['id' => 'wamid.x']]], 200),
+        ]);
+
+        $subscriber = $this->makeSuspendedSubscriber();
+        $svc = app(WhatsAppConversationService::class);
+
+        $svc->handleWebhookPayload([
+            'entry' => [[
+                'changes' => [[
+                    'value' => [
+                        'messages' => [[
+                            'from' => '970599000333',
+                            'type' => 'button',
+                            'button' => ['text' => 'الدعم الفني', 'payload' => 'support'],
+                        ]],
+                    ],
+                ]],
+            ]],
+        ]);
+
+        $this->assertDatabaseHas('whatsapp_chat_sessions', [
+            'phone' => '970599000333',
+            'state' => WhatsappChatSession::STATE_AWAIT_CHECK_LINE,
+        ]);
+
+        Http::assertSent(function ($request) {
+            $data = $request->data();
+
+            return ($data['type'] ?? '') === 'template'
+                && ($data['template']['name'] ?? '') === 'afhas_khatak';
+        });
+
+        $svc->handleWebhookPayload([
+            'entry' => [[
+                'changes' => [[
+                    'value' => [
+                        'messages' => [[
+                            'from' => '970599000333',
+                            'type' => 'text',
+                            'text' => ['body' => $subscriber->subscription_number],
+                        ]],
+                    ],
+                ]],
+            ]],
+        ]);
+
+        $this->assertDatabaseHas('whatsapp_chat_sessions', [
+            'phone' => '970599000333',
+            'state' => WhatsappChatSession::STATE_MENU,
+        ]);
+
+        Http::assertSent(function ($request) {
+            $data = $request->data();
+            $body = (string) data_get($data, 'text.body', '');
+
+            return ($data['type'] ?? '') === 'text'
+                && str_contains($body, 'نتيجة فحص الخط')
+                && str_contains($body, (string) $subscriber->subscription_number);
+        });
     }
 
     public function test_unknown_subscription_number_keeps_waiting(): void
