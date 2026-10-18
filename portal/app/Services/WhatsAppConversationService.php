@@ -7,8 +7,11 @@ use App\Models\WhatsappChatSession;
 use Illuminate\Support\Facades\Log;
 
 /**
- * Inbound WhatsApp chat flow: Quick Reply "مدد خطك" → ask subscription number → self-extend.
- * Replies go through a callable so Meta Cloud API or Chatwoot Agent Bot can deliver them.
+ * Chatbot flow (Chatwoot bot or Meta webhook):
+ * - first message → template button_start_message
+ * - الدعم الفني / افحص خطك → check-line template + ask subscription number → status
+ * - مدد خطك → ask subscription number → self-extend
+ * - المبيعات → sales text
  */
 class WhatsAppConversationService
 {
@@ -76,8 +79,6 @@ class WhatsAppConversationService
     }
 
     /**
-     * Shared flow for Meta webhook or Chatwoot agent bot.
-     *
      * @param  callable(string): void  $reply
      * @param  array<string, mixed>  $raw
      */
@@ -89,25 +90,144 @@ class WhatsAppConversationService
             return;
         }
 
+        $session = WhatsappChatSession::query()->where('phone', $phone)->first();
+
+        if ($session && ! $session->isExpired()) {
+            if ($session->state === WhatsappChatSession::STATE_AWAIT_SUBSCRIPTION_NUMBER) {
+                $this->completeExtendWithSubscriptionNumber($phone, $session, $text, $reply);
+
+                return;
+            }
+
+            if ($session->state === WhatsappChatSession::STATE_AWAIT_CHECK_LINE) {
+                $this->completeCheckLine($phone, $session, $text, $reply);
+
+                return;
+            }
+        } elseif ($session && $session->isExpired()) {
+            $session->update(['state' => WhatsappChatSession::STATE_IDLE, 'expires_at' => null]);
+        }
+
         if ($this->isExtendIntent($text, $raw)) {
             $this->beginAwaitSubscriptionNumber($phone, $reply);
 
             return;
         }
 
-        $session = WhatsappChatSession::query()->where('phone', $phone)->first();
-        if (! $session || $session->state !== WhatsappChatSession::STATE_AWAIT_SUBSCRIPTION_NUMBER) {
-            return;
-        }
-
-        if ($session->isExpired()) {
-            $session->update(['state' => WhatsappChatSession::STATE_IDLE, 'expires_at' => null]);
-            $reply('انتهت مهلة طلب التمديد. اضغط زر «مدد خطك 3 أيام» من جديد إذا احتجت.');
+        if ($this->isSupportIntent($text)) {
+            $this->beginCheckLine($phone, $reply);
 
             return;
         }
 
-        $this->completeExtendWithSubscriptionNumber($phone, $session, $text, $reply);
+        if ($this->isSalesIntent($text)) {
+            $reply((string) config(
+                'services.whatsapp.sales_reply_text',
+                "للمبيعات والتجديد تواصل معنا:\nالهاتف: 0598624583\nأو عبر فريق المبيعات في هذه المحادثة."
+            ));
+            $this->touchSession($phone, WhatsappChatSession::STATE_MENU);
+
+            return;
+        }
+
+        // أول رسالة / أي نص غير معروف → قائمة البداية
+        $this->sendStartMenu($phone, $reply);
+    }
+
+    private function sendStartMenu(string $phone, callable $reply): void
+    {
+        $template = trim((string) config('services.whatsapp.template_start', 'button_start_message'));
+        $sent = false;
+
+        if ($template !== '' && $this->whatsapp->isLive()) {
+            $result = $this->whatsapp->sendTemplate($phone, $template, []);
+            $sent = (bool) ($result['ok'] ?? false);
+            if (! $sent) {
+                Log::warning('Start menu template failed', [
+                    'error' => $this->whatsapp->getLastError(),
+                    'template' => $template,
+                ]);
+            }
+        }
+
+        if (! $sent) {
+            $reply(
+                "أهلاً بكم في مدد للاتصالات.\n"
+                ."اختر:\n"
+                ."• الدعم الفني\n"
+                ."• المبيعات\n"
+                ."• مدد خطك 3 أيام"
+            );
+        }
+
+        $this->touchSession($phone, WhatsappChatSession::STATE_MENU);
+    }
+
+    /**
+     * @param  callable(string): void  $reply
+     */
+    private function beginCheckLine(string $phone, callable $reply): void
+    {
+        $template = trim((string) config('services.whatsapp.template_check_line', 'afhas_khatak'));
+        $sent = false;
+
+        if ($template !== '' && $this->whatsapp->isLive()) {
+            $result = $this->whatsapp->sendTemplate($phone, $template, []);
+            $sent = (bool) ($result['ok'] ?? false);
+            if (! $sent) {
+                Log::warning('Check-line template failed', [
+                    'error' => $this->whatsapp->getLastError(),
+                    'template' => $template,
+                ]);
+            }
+        }
+
+        $this->touchSession($phone, WhatsappChatSession::STATE_AWAIT_CHECK_LINE);
+
+        if (! $sent) {
+            $reply("لفحص خطك، أرسل رقم الاشتراك الآن.\nمثال: MADD-000003");
+        }
+    }
+
+    /**
+     * @param  callable(string): void  $reply
+     */
+    private function completeCheckLine(
+        string $phone,
+        WhatsappChatSession $session,
+        string $rawNumber,
+        callable $reply
+    ): void {
+        $normalized = Subscriber::normalizeSubscriptionNumber($rawNumber);
+        $subscriber = Subscriber::query()
+            ->where('subscription_number', $normalized)
+            ->with(['plan', 'router'])
+            ->first();
+
+        if (! $subscriber) {
+            $reply('رقم الاشتراك غير موجود. أعد الإرسال بالشكل الصحيح (مثال: MADD-000003).');
+
+            return;
+        }
+
+        $session->update(['state' => WhatsappChatSession::STATE_MENU, 'expires_at' => $this->sessionExpiry()]);
+
+        $expired = $this->portal->isSubscriptionExpired($subscriber);
+        $status = $expired ? 'منتهٍ' : ($subscriber->status === 'suspended' ? 'معلّق / مفصول' : 'نشط');
+        $online = $subscriber->is_online ? 'نعم' : 'لا';
+        $plan = $subscriber->plan?->name ?? '—';
+        $end = $subscriber->end_date?->toDateString() ?? '—';
+
+        $reply(
+            "نتيجة فحص الخط:\n"
+            ."رقم الاشتراك: {$subscriber->subscription_number}\n"
+            ."الاسم: {$subscriber->full_name}\n"
+            ."الباقة: {$plan}\n"
+            ."الحالة: {$status}\n"
+            ."تاريخ الانتهاء: {$end}\n"
+            ."متصل الآن: {$online}\n\n"
+            .'للتمديد المجاني اكتب: مدد خطك 3 أيام'
+        );
     }
 
     /**
@@ -139,7 +259,7 @@ class WhatsAppConversationService
     {
         $normalized = mb_strtolower(preg_replace('/\s+/u', ' ', $text) ?? $text);
 
-        if (str_contains($normalized, 'مدد خطك') || str_contains($normalized, 'تمديد')) {
+        if (str_contains($normalized, 'مدد خطك')) {
             return true;
         }
 
@@ -150,8 +270,25 @@ class WhatsAppConversationService
             ?: ''
         );
 
-        return str_contains(mb_strtolower($payload), 'extend')
-            || str_contains($payload, 'مدد');
+        return str_contains(mb_strtolower($payload), 'extend');
+    }
+
+    private function isSupportIntent(string $text): bool
+    {
+        $t = mb_strtolower(preg_replace('/\s+/u', ' ', $text) ?? $text);
+
+        return str_contains($t, 'الدعم الفني')
+            || str_contains($t, 'افحص خطك')
+            || str_contains($t, 'فحص الخط')
+            || str_contains($t, 'دعم فني');
+    }
+
+    private function isSalesIntent(string $text): bool
+    {
+        $t = mb_strtolower(preg_replace('/\s+/u', ' ', $text) ?? $text);
+
+        return str_contains($t, 'المبيعات')
+            || str_contains($t, 'مبيعات');
     }
 
     /**
@@ -159,16 +296,7 @@ class WhatsAppConversationService
      */
     private function beginAwaitSubscriptionNumber(string $phone, callable $reply): void
     {
-        $hours = max(1, (int) config('services.whatsapp.chat_session_ttl_hours', 6));
-
-        WhatsappChatSession::query()->updateOrCreate(
-            ['phone' => $phone],
-            [
-                'state' => WhatsappChatSession::STATE_AWAIT_SUBSCRIPTION_NUMBER,
-                'expires_at' => now()->addHours($hours),
-            ]
-        );
-
+        $this->touchSession($phone, WhatsappChatSession::STATE_AWAIT_SUBSCRIPTION_NUMBER);
         $reply("لإتمام التمديد المجاني، أرسل رقم الاشتراك الآن.\nمثال: MADD-000003");
     }
 
@@ -196,7 +324,7 @@ class WhatsAppConversationService
 
         $state = $this->portal->selfExtendState($subscriber);
         if (! ($state['can_self_extend'] ?? false)) {
-            $session->update(['state' => WhatsappChatSession::STATE_IDLE, 'expires_at' => null]);
+            $session->update(['state' => WhatsappChatSession::STATE_MENU, 'expires_at' => $this->sessionExpiry()]);
             $reply((string) ($state['message'] ?? 'لا يمكن تفعيل فترة السماح حالياً.'));
 
             return;
@@ -211,7 +339,7 @@ class WhatsAppConversationService
             }
 
             $result = $this->portal->performSelfExtend($user, $subscriber->fresh());
-            $session->update(['state' => WhatsappChatSession::STATE_IDLE, 'expires_at' => null]);
+            $session->update(['state' => WhatsappChatSession::STATE_MENU, 'expires_at' => $this->sessionExpiry()]);
 
             $reply(
                 "تم تمديد الخط بنجاح لمدة {$result['days']} أيام.\n"
@@ -221,5 +349,23 @@ class WhatsAppConversationService
         } catch (\Throwable $e) {
             $reply('تعذّر التمديد: '.($e->getMessage() ?: 'حاول لاحقاً أو تواصل مع الشركة.'));
         }
+    }
+
+    private function touchSession(string $phone, string $state): void
+    {
+        WhatsappChatSession::query()->updateOrCreate(
+            ['phone' => $phone],
+            [
+                'state' => $state,
+                'expires_at' => $this->sessionExpiry(),
+            ]
+        );
+    }
+
+    private function sessionExpiry(): \Carbon\CarbonInterface
+    {
+        $hours = max(1, (int) config('services.whatsapp.chat_session_ttl_hours', 6));
+
+        return now()->addHours($hours);
     }
 }

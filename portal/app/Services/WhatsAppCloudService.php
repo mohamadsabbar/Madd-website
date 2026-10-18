@@ -109,10 +109,13 @@ class WhatsAppCloudService
             $components[] = $headerComponent;
         }
 
-        $components[] = [
-            'type' => 'body',
-            'parameters' => $bodyParameters,
-        ];
+        // Templates without body variables must omit the body component.
+        if ($bodyParameters !== []) {
+            $components[] = [
+                'type' => 'body',
+                'parameters' => $bodyParameters,
+            ];
+        }
 
         $suffix = trim((string) $urlButtonSuffix);
         if ($suffix !== '') {
@@ -129,15 +132,19 @@ class WhatsAppCloudService
             ];
         }
 
+        $template = [
+            'name' => $templateName,
+            'language' => ['code' => $language],
+        ];
+        if ($components !== []) {
+            $template['components'] = $components;
+        }
+
         $payload = [
             'messaging_product' => 'whatsapp',
             'to' => $to,
             'type' => 'template',
-            'template' => [
-                'name' => $templateName,
-                'language' => ['code' => $language],
-                'components' => $components,
-            ],
+            'template' => $template,
         ];
 
         $url = "https://graph.facebook.com/{$version}/{$phoneNumberId}/messages";

@@ -58,6 +58,11 @@ return [
         'template_suspend' => env('WHATSAPP_TEMPLATE_SUSPEND'),
         /** رسالة تأكيد الدفع */
         'template_paid' => env('WHATSAPP_TEMPLATE_PAID'),
+        /** قائمة البداية عند أول رسالة */
+        'template_start' => env('WHATSAPP_TEMPLATE_START', 'button_start_message'),
+        /** بعد اختيار الدعم الفني / افحص خطك */
+        'template_check_line' => env('WHATSAPP_TEMPLATE_CHECK_LINE', 'afhas_khatak'),
+        'sales_reply_text' => env('WHATSAPP_SALES_REPLY_TEXT'),
         /** قديم — غير مستخدم في الجدولة الحالية */
         'template_after' => env('WHATSAPP_TEMPLATE_REMINDER_AFTER'),
         'template_language' => env('WHATSAPP_TEMPLATE_LANGUAGE', 'ar'),
