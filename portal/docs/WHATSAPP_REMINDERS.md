@@ -17,10 +17,19 @@
 
 ## زر «مدد خطك 3 أيام»
 
-- قالب Meta بزر **Visit website**
-- رابط الأساس: `https://my.madd.ps/wa/extend/`
-- اللاحقة الديناميكية: توكن لمرة واحدة (صالح ~72 ساعة)
-- عند الضغط: صفحة عامة تنفّذ التمديد الذاتي إن كان المشترك منتهياً أو مفصولاً وما زالت لديه محاولات سماح
+### الوضع الموصى به (زر ثابت — متوافق مع Chatwoot)
+
+- رابط الزر في Meta: `https://my.madd.ps/wa/extend` (**بدون** `{{1}}`)
+- في `.env`: `WHATSAPP_CTA_URL_DYNAMIC=false`
+- عند الضغط: صفحة تطلب رقم الجوال ثم تنفّذ التمديد إن كان متاحاً
+
+### وضع التوكن الديناميكي (اختياري)
+
+- رابط الزر: `https://my.madd.ps/wa/extend/{{1}}`
+- في `.env`: `WHATSAPP_CTA_URL_DYNAMIC=true`
+- النظام يرسل لاحقة التوكن مع رسالة واتساب
+
+إذا ظهر خطأ Meta `Button at index 0 of type Url does not require parameters` فالزر ثابت — اترك `WHATSAPP_CTA_URL_DYNAMIC=false`.
 
 ### إعداد القالب في Meta
 
@@ -28,10 +37,8 @@
 2. Body: المتغيرات `{{1}}` الاسم، `{{2}}` الفاتورة، `{{3}}` المبلغ، `{{4}}` التاريخ.
 3. Buttons → **Visit website**
    - نص الزر: `مدد خطك 3 أيام`
-   - الرابط: `https://my.madd.ps/wa/extend/{{1}}` (متغير في نهاية الرابط)
+   - الرابط الثابت: `https://my.madd.ps/wa/extend`
 4. اعتمد القالب ثم ضع الأسماء في `.env`.
-
-ملاحظة: متغير الزر `{{1}}` منفصل عن متغيرات الجسم في واجهة Meta.
 
 ## الأمر (تذكيرات قبل الانتهاء فقط)
 
@@ -59,6 +66,7 @@ WHATSAPP_TEMPLATE_HEADER_TYPE=none
 WHATSAPP_TEMPLATE_HEADER_IMAGE_URL=
 WHATSAPP_TEMPLATE_HEADER_TEXT=
 WHATSAPP_CTA_EXTEND_STAGES=before_1,suspend
+WHATSAPP_CTA_URL_DYNAMIC=false
 WHATSAPP_EXTEND_TOKEN_TTL_HOURS=72
 WHATSAPP_BEFORE_DAYS=3,1
 WHATSAPP_REMINDER_TIME=10:30

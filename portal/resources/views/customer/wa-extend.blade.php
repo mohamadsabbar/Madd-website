@@ -24,6 +24,21 @@
             @endif
         @endif
 
+        @if(!empty($show_form) && empty($ok))
+            <form method="post" action="{{ route('web.whatsapp.extend.submit') }}" novalidate style="margin-top:1.25rem;">
+                @csrf
+                <div class="cp-field">
+                    <label for="phone">رقم الجوال</label>
+                    <input id="phone" name="phone" value="{{ old('phone', $old_phone ?? '') }}" required
+                           autocomplete="tel" inputmode="tel" placeholder="05XXXXXXXX أو 972...">
+                </div>
+                @error('phone')
+                    <div class="cp-alert cp-alert--err" role="alert">{{ $message }}</div>
+                @enderror
+                <button class="cp-btn cp-btn--primary cp-btn--block" type="submit">تفعيل التمديد</button>
+            </form>
+        @endif
+
         <p class="cp-hint" style="margin-top:1.25rem;">
             <a href="{{ route('web.customer.login') }}">دخول حساب المشترك</a>
         </p>

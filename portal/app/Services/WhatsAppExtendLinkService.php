@@ -44,15 +44,56 @@ class WhatsAppExtendLinkService
     }
 
     /**
+     * Whether Meta URL button expects a dynamic {{1}} suffix parameter.
+     * Static buttons (Chatwoot-style / fixed URL) must NOT send button parameters.
+     */
+    public function usesDynamicUrlButton(): bool
+    {
+        return filter_var(config('services.whatsapp.cta_url_dynamic', false), FILTER_VALIDATE_BOOL);
+    }
+
+    /**
      * Path suffix only (for Meta dynamic URL button variable).
+     * Returns null for static URL buttons so Cloud API does not reject the send.
      */
     public function buttonSuffix(Subscriber $subscriber, string $stage): ?string
     {
-        if (! $this->stageSupportsCta($stage)) {
+        if (! $this->stageSupportsCta($stage) || ! $this->usesDynamicUrlButton()) {
             return null;
         }
 
         return $this->issueToken($subscriber, $stage)->token;
+    }
+
+    /**
+     * Find subscriber by phone in common local / E.164 shapes.
+     */
+    public function findSubscriberByPhone(string $phone): ?Subscriber
+    {
+        $wa = app(WhatsAppCloudService::class);
+        $normalized = $wa->normalizePhone($phone);
+        if ($normalized === '') {
+            return null;
+        }
+
+        $candidates = array_values(array_unique(array_filter([
+            $normalized,
+            $phone,
+            preg_replace('/\D+/', '', $phone) ?: null,
+            str_starts_with($normalized, '970') ? '0'.substr($normalized, 3) : null,
+            str_starts_with($normalized, '972') ? '0'.substr($normalized, 3) : null,
+            str_starts_with($normalized, '970') ? substr($normalized, 3) : null,
+            str_starts_with($normalized, '972') ? substr($normalized, 3) : null,
+        ])));
+
+        return Subscriber::query()
+            ->where(function ($q) use ($candidates) {
+                foreach ($candidates as $candidate) {
+                    $q->orWhere('phone', $candidate);
+                }
+            })
+            ->orderByDesc('id')
+            ->first();
     }
 
     public function findValid(string $token): ?WhatsappExtendToken

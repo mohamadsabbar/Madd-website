@@ -67,6 +67,11 @@ return [
         'header_text' => env('WHATSAPP_TEMPLATE_HEADER_TEXT'),
         /** مراحل تُرفق بزر URL «مدد خطك 3 أيام» — before_1,suspend */
         'cta_extend_stages' => env('WHATSAPP_CTA_EXTEND_STAGES', 'before_1,suspend'),
+        /**
+         * true فقط إذا زر Meta فيه لاحقة ديناميكية: https://my.madd.ps/wa/extend/{{1}}
+         * false (افتراضي) لزر ثابت مثل Chatwoot: https://my.madd.ps/wa/extend
+         */
+        'cta_url_dynamic' => env('WHATSAPP_CTA_URL_DYNAMIC', false),
         'extend_token_ttl_hours' => (int) env('WHATSAPP_EXTEND_TOKEN_TTL_HOURS', 72),
         'before_days' => (function (): array {
             $raw = explode(',', (string) env('WHATSAPP_BEFORE_DAYS', '3,1'));

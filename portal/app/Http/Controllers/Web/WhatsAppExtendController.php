@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Subscriber;
 use App\Services\CustomerPortalService;
 use App\Services\SubscriberPortalUserService;
 use App\Services\WhatsAppExtendLinkService;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\View\View;
 
@@ -17,6 +19,39 @@ class WhatsAppExtendController extends Controller
         private readonly SubscriberPortalUserService $portalUsers,
     ) {}
 
+    /**
+     * Static Meta button landing: https://my.madd.ps/wa/extend
+     */
+    public function form(): View
+    {
+        return view('customer.wa-extend', [
+            'ok' => null,
+            'title' => 'مدد خطك 3 أيام',
+            'message' => 'أدخل رقم الجوال المسجّل لدينا لتفعيل فترة السماح المجانية إن كانت متاحة.',
+            'show_form' => true,
+        ]);
+    }
+
+    public function submit(Request $request): View|Response
+    {
+        $data = $request->validate([
+            'phone' => ['required', 'string', 'max:32'],
+        ]);
+
+        $subscriber = $this->links->findSubscriberByPhone($data['phone']);
+        if (! $subscriber) {
+            return response()->view('customer.wa-extend', [
+                'ok' => false,
+                'title' => 'لم يُعثر على الاشتراك',
+                'message' => 'تأكد من رقم الجوال كما هو مسجّل في مدد، أو تواصل مع الشركة.',
+                'show_form' => true,
+                'old_phone' => $data['phone'],
+            ], 404);
+        }
+
+        return $this->performExtend($subscriber, null);
+    }
+
     public function show(string $token): View|Response
     {
         $row = $this->links->findValid($token);
@@ -25,7 +60,8 @@ class WhatsAppExtendController extends Controller
             return response()->view('customer.wa-extend', [
                 'ok' => false,
                 'title' => 'الرابط غير صالح',
-                'message' => 'رابط التمديد منتهٍ أو غير صحيح. اطلب رسالة جديدة أو افتح تطبيق مدد.',
+                'message' => 'رابط التمديد منتهٍ أو غير صحيح. يمكنك التمديد برقم الجوال أدناه.',
+                'show_form' => true,
             ], 410);
         }
 
@@ -34,6 +70,7 @@ class WhatsAppExtendController extends Controller
                 'ok' => false,
                 'title' => 'تم استخدام الرابط',
                 'message' => 'هذا الرابط استُخدم من قبل. إن احتجت تمديداً آخر راجع تطبيق مدد أو تواصل مع الشركة.',
+                'show_form' => true,
             ], 409);
         }
 
@@ -43,9 +80,15 @@ class WhatsAppExtendController extends Controller
                 'ok' => false,
                 'title' => 'المشترك غير موجود',
                 'message' => 'تعذّر العثور على الاشتراك المرتبط بهذا الرابط.',
+                'show_form' => true,
             ], 404);
         }
 
+        return $this->performExtend($subscriber, $row);
+    }
+
+    private function performExtend(Subscriber $subscriber, $tokenRow = null): View|Response
+    {
         $state = $this->portal->selfExtendState($subscriber);
 
         if (! ($state['can_self_extend'] ?? false)) {
@@ -54,6 +97,7 @@ class WhatsAppExtendController extends Controller
                 'title' => 'التمديد غير متاح الآن',
                 'message' => (string) ($state['message'] ?? 'لا يمكن تفعيل فترة السماح حالياً.'),
                 'subscriber' => $subscriber,
+                'show_form' => true,
             ]);
         }
 
@@ -64,11 +108,14 @@ class WhatsAppExtendController extends Controller
                     'ok' => false,
                     'title' => 'تعذّر التمديد',
                     'message' => 'رقم الهاتف غير صالح لإنشاء حساب البوابة. تواصل مع الشركة.',
+                    'show_form' => true,
                 ], 422);
             }
 
             $result = $this->portal->performSelfExtend($user, $subscriber->fresh());
-            $this->links->markUsed($row);
+            if ($tokenRow) {
+                $this->links->markUsed($tokenRow);
+            }
 
             return response()->view('customer.wa-extend', [
                 'ok' => true,
@@ -78,6 +125,7 @@ class WhatsAppExtendController extends Controller
                 'new_end_date' => $result['new_end_date'],
                 'mikrotik' => $result['mikrotik'] ?? null,
                 'subscriber' => $result['subscriber'],
+                'show_form' => false,
             ]);
         } catch (\Throwable $e) {
             return response()->view('customer.wa-extend', [
@@ -85,6 +133,7 @@ class WhatsAppExtendController extends Controller
                 'title' => 'تعذّر التمديد',
                 'message' => $e->getMessage() ?: 'حدث خطأ غير متوقع. حاول لاحقاً أو تواصل مع الشركة.',
                 'subscriber' => $subscriber,
+                'show_form' => true,
             ], 422);
         }
     }
