@@ -136,28 +136,25 @@ class WhatsAppConversationService
 
     private function sendStartMenu(string $phone, callable $reply): void
     {
+        // نص جلسة مجاني أولاً (نافذة 24 ساعة بعد رسالة الزبون)، ثم القالب بالأزرار.
+        $reply('أهلاً وسهلاً! شو حابب تعمل؟ اختار من الخيارات التالية:');
+
         $template = trim((string) config('services.whatsapp.template_start', 'button_start_message'));
-        $sent = false;
 
         if ($template !== '' && $this->whatsapp->isLive()) {
             $result = $this->whatsapp->sendTemplate($phone, $template, []);
-            $sent = (bool) ($result['ok'] ?? false);
-            if (! $sent) {
+            if (! ($result['ok'] ?? false)) {
                 Log::warning('Start menu template failed', [
                     'error' => $this->whatsapp->getLastError(),
                     'template' => $template,
                 ]);
+                $reply(
+                    "اختر:\n"
+                    ."• الدعم الفني\n"
+                    ."• المبيعات\n"
+                    ."• مدد خطك 3 أيام"
+                );
             }
-        }
-
-        if (! $sent) {
-            $reply(
-                "أهلاً بكم في مدد للاتصالات.\n"
-                ."اختر:\n"
-                ."• الدعم الفني\n"
-                ."• المبيعات\n"
-                ."• مدد خطك 3 أيام"
-            );
         }
 
         $this->touchSession($phone, WhatsappChatSession::STATE_MENU);

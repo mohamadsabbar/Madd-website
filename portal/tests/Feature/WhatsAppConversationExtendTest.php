@@ -132,7 +132,7 @@ class WhatsAppConversationExtendTest extends TestCase
         ]);
     }
 
-    public function test_first_message_sends_start_menu_template(): void
+    public function test_first_message_sends_greeting_text_then_start_menu_template(): void
     {
         config([
             'services.whatsapp.enabled' => true,
@@ -165,6 +165,14 @@ class WhatsAppConversationExtendTest extends TestCase
             'phone' => '970599000222',
             'state' => WhatsappChatSession::STATE_MENU,
         ]);
+
+        Http::assertSent(function ($request) {
+            $data = $request->data();
+            $body = (string) data_get($data, 'text.body', '');
+
+            return ($data['type'] ?? '') === 'text'
+                && str_contains($body, 'أهلاً وسهلاً! شو حابب تعمل؟');
+        });
 
         Http::assertSent(function ($request) {
             $data = $request->data();
