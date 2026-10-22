@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CustomerAccountController;
 use App\Http\Controllers\Api\CustomerController;
 use App\Http\Controllers\Api\CustomerTicketController;
+use App\Http\Controllers\Api\CustomerWifiController;
 use App\Http\Controllers\Api\SiteCmsController;
 use App\Http\Controllers\Api\ChatwootAgentBotController;
 use App\Http\Controllers\Api\WhatsAppWebhookController;
@@ -112,5 +113,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/tickets', [CustomerTicketController::class, 'store']);
         Route::get('/tickets/{ticket}', [CustomerTicketController::class, 'show']);
         Route::post('/tickets/{ticket}/messages', [CustomerTicketController::class, 'reply']);
+
+        Route::get('/wifi', [CustomerWifiController::class, 'show']);
+        Route::post('/wifi/claim', [CustomerWifiController::class, 'claim']);
+        Route::put('/wifi', [CustomerWifiController::class, 'update']);
+        Route::post('/wifi/reboot', [CustomerWifiController::class, 'reboot']);
     });
 });

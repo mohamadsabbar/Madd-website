@@ -24,6 +24,8 @@ class Subscriber extends Model
         'address',
         'pppoe_username',
         'pppoe_password',
+        'acs_serial',
+        'acs_device_id',
         'plan_id',
         'monthly_price',
         'router_id',

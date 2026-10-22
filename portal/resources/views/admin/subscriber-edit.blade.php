@@ -64,6 +64,15 @@
                 </select>
             </div>
 
+            <div class="col-12">
+                <label class="form-label">الرقم التسلسلي للراوتر المنزلي (GenieACS)</label>
+                <input type="text" name="acs_serial" class="form-control" style="border-radius:12px;" value="{{ old('acs_serial', $subscriber->acs_serial) }}" maxlength="100" placeholder="SN أو MAC خلف Hikvision DS-3WR12C" autocomplete="off">
+                <div class="form-text">Hikvision DS-3WR12C: الرقم التسلسلي أو عنوان MAC خلف الجهاز. يربط الراوتر حتى يتحكم الزبون باسم الشبكة وكلمة المرور من التطبيق.</div>
+                @if($subscriber->acs_device_id)
+                    <div class="small text-success mt-1">مرتبط: <code>{{ $subscriber->acs_device_id }}</code></div>
+                @endif
+            </div>
+
             <div class="col-md-6">
                 <label class="form-label">سعر الدورة للمشترك <span class="text-muted small">(اختياري)</span></label>
                 <input type="number" name="monthly_price" class="form-control" style="border-radius:12px;" value="{{ old('monthly_price', $subscriber->monthly_price) }}" min="0" step="0.01" placeholder="فارغ = سعر الباقة من الكتالوج">

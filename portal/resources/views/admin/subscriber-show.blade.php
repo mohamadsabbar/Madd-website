@@ -60,6 +60,7 @@
                 @endif
                 <div class="small mt-1">الراوتر: {{ $subscriber->router?->name ?? '—' }}</div>
                 <div class="small mt-1">PPPoE: <code>{{ $subscriber->pppoe_username }}</code></div>
+                <div class="small mt-1">راوتر منزلي: <code>{{ $subscriber->acs_serial ?: 'غير مربوط' }}</code></div>
             </div>
         </div>
         <div class="col-md-6 col-xl-4">

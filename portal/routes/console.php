@@ -30,3 +30,4 @@ if ($mikrotikSyncMin === 1) {
 }
 
 Schedule::command('mikrotik:prune-traffic-snapshots')->dailyAt('03:15');
+Schedule::command('acs:sync-wifi-provision')->dailyAt('04:10');

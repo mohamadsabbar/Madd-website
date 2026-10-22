@@ -10,6 +10,7 @@ use App\Models\Router;
 use App\Models\Subscriber;
 use App\Services\ActivityLogger;
 use App\Services\BillingSmsService;
+use App\Services\GenieAcsService;
 use App\Services\MikrotikService;
 use App\Services\SubscriberBillingSyncService;
 use App\Services\SubscriberManualDebtService;
@@ -146,6 +147,7 @@ class AdminSubscriberController extends Controller
             'start_date' => ['required', 'date'],
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'monthly_price' => ['nullable', 'numeric', 'min:0'],
+            'acs_serial' => ['nullable', 'string', 'max:100'],
         ], [
             'end_date.after_or_equal' => 'يجب أن يكون تاريخ الانتهاء بعد تاريخ البداية أو مساويًا له.',
         ]);
@@ -155,6 +157,26 @@ class AdminSubscriberController extends Controller
         }
 
         $data['monthly_price'] = $request->filled('monthly_price') ? round((float) $request->input('monthly_price'), 2) : null;
+
+        $data['acs_serial'] = $request->filled('acs_serial')
+            ? app(GenieAcsService::class)->normalizeSerial((string) $data['acs_serial'])
+            : null;
+        if ($data['acs_serial'] === '') {
+            $data['acs_serial'] = null;
+            $data['acs_device_id'] = null;
+        } elseif ($data['acs_serial']) {
+            try {
+                $acs = app(GenieAcsService::class);
+                if ($acs->isConfigured()) {
+                    $device = $acs->findBySerial($data['acs_serial']);
+                    if ($device && ! empty($device['_id'])) {
+                        $data['acs_device_id'] = (string) $device['_id'];
+                    }
+                }
+            } catch (\Throwable $e) {
+                Log::info('GenieACS lookup on subscriber edit skipped', ['error' => $e->getMessage()]);
+            }
+        }
 
         $data['end_date'] = $request->filled('end_date')
             ? Carbon::parse($data['end_date'])->toDateString()

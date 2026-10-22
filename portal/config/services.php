@@ -100,4 +100,16 @@ return [
         'bot_webhook_token' => env('CHATWOOT_BOT_WEBHOOK_TOKEN'),
     ],
 
+    /*
+    | GenieACS NBI — إدارة راوتر الزبون المنزلي (SSID / كلمة المرور / الأجهزة).
+    | الافتراضي على السيرفر: http://127.0.0.1:7557  (لا تلمس منافذ GenieACS).
+    | من Docker استخدم host.docker.internal:7557
+    */
+    'genieacs' => [
+        'nbi_url' => env('GENIEACS_NBI_URL', ''),
+        'username' => env('GENIEACS_NBI_USERNAME', ''),
+        'password' => env('GENIEACS_NBI_PASSWORD', ''),
+        'timeout' => (int) env('GENIEACS_NBI_TIMEOUT', 20),
+    ],
+
 ];
